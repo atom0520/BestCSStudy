@@ -3,14 +3,16 @@ using System;
 using BestCSStudy.API.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace BestCSStudy.API.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20190602000938_AddedPostImages")]
+    partial class AddedPostImages
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -115,7 +117,7 @@ namespace BestCSStudy.API.Migrations
 
                     b.Property<bool>("IsMain");
 
-                    b.Property<int?>("PostId");
+                    b.Property<int>("PostId");
 
                     b.Property<string>("PublicId");
 
@@ -210,7 +212,8 @@ namespace BestCSStudy.API.Migrations
                 {
                     b.HasOne("BestCSStudy.API.Models.Post", "Post")
                         .WithMany("PostImages")
-                        .HasForeignKey("PostId");
+                        .HasForeignKey("PostId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 #pragma warning restore 612, 618
         }

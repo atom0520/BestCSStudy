@@ -10,7 +10,7 @@ import * as serviceWorker from './serviceWorker';
 import 'bootstrap/dist/css/bootstrap.min.css';
 // import 'bootswatch/dist/sketchy/bootstrap.min.css';
 import 'bootswatch/dist/sandstone/bootstrap.min.css';
-import 'font-awesome/css/font-awesome.css';
+import '@fortawesome/fontawesome-free/css/all.min.css';
 import 'alertifyjs/build/css/alertify.min.css';
 import 'alertifyjs/build/css/themes/bootstrap.min.css';
 import 'react-image-gallery/styles/css/image-gallery.css';

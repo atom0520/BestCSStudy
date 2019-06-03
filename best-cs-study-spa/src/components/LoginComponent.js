@@ -205,7 +205,7 @@ class Login extends Component {
                             />
                        
                         <div className="input-group-append">
-                            <span className="input-group-text"><i className={this.state.form.fields.password.visible?"fa fa-eye-slash":"fa fa-eye"} style={{cursor: "pointer"}} onClick={()=>this.togglePasswordVisibility('password')}></i></span>
+                            <span className="input-group-text"><i className={this.state.form.fields.password.visible?"fas fa-eye-slash":"fas fa-eye"} style={{cursor: "pointer"}} onClick={()=>this.togglePasswordVisibility('password')}></i></span>
                         </div>
                         <div className="invalid-feedback">{this.showFormFieldError('password')?this.state.form.fields.password.error:''}</div>
                     </div>

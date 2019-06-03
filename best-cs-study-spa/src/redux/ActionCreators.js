@@ -759,3 +759,97 @@ export const markMessageAsRead = (userId, messageId, onSuccess, onError) => (dis
         }
     });
 }
+
+export const uploadPostImage = (file, onSuccess, onError) => (dispatch) => {
+    let formData = new FormData();
+    formData.append('File', file);
+
+    return fetch(baseUrl + `postsImages`, {
+        method: 'POST',
+        // headers: {
+        //     'Content-Type': 'application/json'
+        // },
+        body: formData
+    })
+    .then(response=>{
+            if(response.ok){
+                response.json()
+                .then(responseBodyJson=>{
+                    if(onSuccess){
+                        onSuccess(responseBodyJson);
+                    }
+                })
+                .catch(error=>{
+                    if(onError){
+                        onError(error);
+                    }
+                });
+            } else {     
+                handleFetchResponseNotOkError(response,
+                error=>{
+                    if(onError){
+                        onError(error);
+                    }
+                });
+            }
+        },
+        error=>{
+            throw error;
+        })
+    .catch(error=>{
+        if(onError){
+            onError(error);
+        }
+    })
+};
+
+export const createPost = (title, description, category, tags, links, images, onSuccess, onError) => (dispatch) => {
+    let formData = new FormData();
+    formData.append('title', title);
+    formData.append('description', description);
+    formData.append('category', category);
+    formData.append('tags', tags);
+    formData.append('links', links);
+    for(let i=0; i<images.length; i++){
+        formData.append(`image${i+1}`, images[i]);
+    }
+    // formData.append(`images`, images);
+
+    return fetch(baseUrl + `posts`, {
+        method: 'POST',
+        // headers: {
+        //     'Content-Type': 'application/json'
+        // },
+        body: formData
+    })
+    .then(response=>{
+            if(response.ok){
+                response.json()
+                .then(responseBodyJson=>{
+                    if(onSuccess){
+                        onSuccess(responseBodyJson);
+                    }
+                })
+                .catch(error=>{
+                    if(onError){
+                        onError(error);
+                    }
+                });
+            } else {     
+                handleFetchResponseNotOkError(response,
+                error=>{
+                    if(onError){
+                        onError(error);
+                    }
+                });
+            }
+        },
+        error=>{
+            throw error;
+        })
+    .catch(error=>{
+        if(onError){
+            onError(error);
+        }
+    })
+};

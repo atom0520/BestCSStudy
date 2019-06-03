@@ -43,7 +43,12 @@ namespace BestCSStudy.API.Data
 
             return photo;
         }
+        public async Task<PostImage> GetPostImage(int id)
+        {
+            var postImage = await _context.PostImages.FirstOrDefaultAsync(p => p.Id == id);
 
+            return postImage;
+        }
         public async Task<User> GetUser(int id)
         {
             var user = await _context.Users.Include(p => p.Photos).FirstOrDefaultAsync(u => u.Id == id);

@@ -14,7 +14,7 @@ namespace BestCSStudy.API.Data
         public DbSet<Like> Likes { get; set; }
         public DbSet<Message> Messages { get; set; }
         public DbSet<Post> Posts { get; set; }
-
+        public DbSet<PostImage> PostImages { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             builder.Entity<Like>()

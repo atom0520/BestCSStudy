@@ -9,6 +9,7 @@ import MemberList from './member/MemberListComponent';
 import MemberDetails from './member/MemberDetailsComponent';
 import MemberEdit from './member/MemberEditComponent';
 import Messages from './MessagesComponent';
+import CreatePost from './CreatePostComponent';
 import Posts from './PostsComponent';
 import { Switch, Route, Redirect, withRouter } from 'react-router-dom';
 // import { Modal } from 'react-bootstrap';
@@ -140,7 +141,8 @@ class Main extends Component {
                     <AuthGuardedRoute path="/member/edit" render={(props) => <MemberEdit/>} />
                     <AuthGuardedRoute path="/messages" render={(props) => <Messages/>} />            
                     <AuthGuardedRoute path="/lists" render={(props) => <Lists/>} />
-                    
+                    <AuthGuardedRoute path="/createPost" render={(props) => <CreatePost/>} />
+
                     <Redirect to="/home" />
                 </Switch>
                 

@@ -171,8 +171,10 @@ class Header extends Component {
                         </ul>
                        
                         {
-                            this.props.auth.isAuthenticated?                        
-                            <button className="btn btn-success my-2 my-sm-0 mr-3">Create New Post</button>
+                            this.props.auth.isAuthenticated?       
+                            <Link to={`/createPost`}>
+                                <button className="btn btn-success my-2 my-sm-0 mr-3">Create New Post</button>
+                            </Link>
                             : null
                         }
                         {

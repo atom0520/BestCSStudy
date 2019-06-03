@@ -27,6 +27,10 @@ namespace BestCSStudy.API.Helpers
             CreateMap<UserForUpdateDto, User>();
             CreateMap<Photo, PhotoForReturnDto>();
             CreateMap<PhotoForCreationDto, Photo>();
+
+            CreateMap<PostImage, PostImageForReturnDto>();
+            CreateMap<PostImageForCreationDto, PostImage>();
+
             CreateMap<UserForRegisterDto, User>();
             CreateMap<MessageForCreationDto, Message>().ReverseMap();
             CreateMap<Message, MessageToReturnDto>()
