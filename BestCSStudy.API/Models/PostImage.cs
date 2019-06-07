@@ -10,6 +10,6 @@ namespace BestCSStudy.API.Models
         public bool IsMain { get; set; }
         public string PublicId { get; set; }
         public Post Post { get; set; }
-        public int? PostId { get; set; }
+        public int PostId { get; set; }
     }
 }

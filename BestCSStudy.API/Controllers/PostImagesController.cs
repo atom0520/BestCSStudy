@@ -14,8 +14,8 @@ using Microsoft.Extensions.Options;
 
 namespace BestCSStudy.API.Controllers
 {
-    [Authorize]
-    [Route("api/postsImages")]
+    // [Authorize]
+    [Route("api/postImages")]
     public class PostImagesController : ControllerBase
     {
         private readonly IDatingRepository _repo;
@@ -94,6 +94,50 @@ namespace BestCSStudy.API.Controllers
 
             return BadRequest("Failed to upload the post image.");
         }
+        
+        [HttpPost("{id}")]
+        public async Task<IActionResult> AddImageForPost(int id, 
+            [FromForm]PostImageForCreationDto postImageForCreationDto)
+        {
+            var postFromRepo = await _repo.GetPost(id);
+
+            var file = postImageForCreationDto.File;
+
+            var uploadResult = new ImageUploadResult();
+
+            if(file.Length > 0){
+                using (var stream = file.OpenReadStream())
+                {
+                    var uploadParams = new ImageUploadParams()
+                    {
+                        File = new FileDescription(file.Name, stream),
+                        Transformation = new Transformation().Width(500).Height(500).Crop("fill").Gravity("face")
+                    };
+
+                    uploadResult = _cloudinary.Upload(uploadParams);
+                }
+            }
+
+            postImageForCreationDto.Url = uploadResult.Uri.ToString();
+            postImageForCreationDto.PublicId = uploadResult.PublicId;
+
+            var postImage = _mapper.Map<PostImage>(postImageForCreationDto);
+
+            if (!postFromRepo.PostImages.Any(u=>u.IsMain)){}
+                // postImage.IsMain = true;
+            
+            postFromRepo.PostImages.Add(postImage);
+
+            if (await _repo.SaveAll()){
+
+                var postImageToReturn = _mapper.Map<PostImageForReturnDto>(postImage);
+                
+                return CreatedAtRoute("GetPostImage", new {id = postImage.Id}, postImageToReturn);
+            }
+
+            return BadRequest("Could not add the post image.");
+        }
+
 
         [HttpPost("{id}/setMain")]
         public async Task<IActionResult> SetMainPhoto(int userId, int id)

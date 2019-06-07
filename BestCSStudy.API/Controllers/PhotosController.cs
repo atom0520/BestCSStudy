@@ -14,7 +14,7 @@ using Microsoft.Extensions.Options;
 
 namespace BestCSStudy.API.Controllers
 {
-    [Authorize]
+    // [Authorize]
     [Route("api/users/{userId}/photos")]
     public class PhotosController : ControllerBase
     {
@@ -52,8 +52,8 @@ namespace BestCSStudy.API.Controllers
         public async Task<IActionResult> AddPhotoForUser(int userId, 
             [FromForm]PhotoForCreationDto photoForCreationDto)
         {
-            if(userId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
-                return Unauthorized();
+            // if(userId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
+            //     return Unauthorized();
             
             var userFromRepo = await _repo.GetUser(userId);
 

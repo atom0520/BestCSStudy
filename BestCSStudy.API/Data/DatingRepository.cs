@@ -57,7 +57,7 @@ namespace BestCSStudy.API.Data
         }
         public async Task<Post> GetPost(int id)
         {
-            var post = await _context.Posts.FirstOrDefaultAsync(p => p.Id == id);
+            var post = await _context.Posts.Include(p => p.PostImages).FirstOrDefaultAsync(p => p.Id == id);
 
             return post;
         }

@@ -115,7 +115,7 @@ namespace BestCSStudy.API.Migrations
 
                     b.Property<bool>("IsMain");
 
-                    b.Property<int?>("PostId");
+                    b.Property<int>("PostId");
 
                     b.Property<string>("PublicId");
 
@@ -210,7 +210,8 @@ namespace BestCSStudy.API.Migrations
                 {
                     b.HasOne("BestCSStudy.API.Models.Post", "Post")
                         .WithMany("PostImages")
-                        .HasForeignKey("PostId");
+                        .HasForeignKey("PostId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 #pragma warning restore 612, 618
         }

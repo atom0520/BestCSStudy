@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -10,6 +11,7 @@ using BestCSStudy.API.Models;
 using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 
@@ -72,11 +74,54 @@ namespace BestCSStudy.API.Controllers
          [HttpPost]
         public async Task<IActionResult> CreatePost([FromForm]PostForCreationDto postForCreationDto)
         {
-
             var postToCreate = new Post();
 
+            postToCreate.Title = postForCreationDto.Title;
+            postToCreate.Description = postForCreationDto.Description;
+            postToCreate.Category = postForCreationDto.Category;
+            postToCreate.Tags = postForCreationDto.Tags;
+            postToCreate.Links = postForCreationDto.Links;
+            postToCreate.DateAdded = postForCreationDto.DateAdded;
             _repo.Add<Post>(postToCreate);
+            await _repo.SaveAll();
             
+            var postFromRepo = await _repo.GetPost(postToCreate.Id);
+
+            var files = new IFormFile[]{
+                postForCreationDto.Image1, 
+                postForCreationDto.Image2, 
+                postForCreationDto.Image3, 
+                postForCreationDto.Image4, 
+                postForCreationDto.Image5
+                };
+            
+            foreach(var file in files){
+                if(file==null || file.Length <= 0) continue;
+                var uploadResult = new ImageUploadResult();
+     
+                using (var stream = file.OpenReadStream())
+                {
+                    var uploadParams = new ImageUploadParams()
+                    {
+                        File = new FileDescription(file.Name, stream),
+                        Transformation = new Transformation().Width(500).Height(500).Crop("fill").Gravity("face")
+                    };
+
+                    uploadResult = _cloudinary.Upload(uploadParams);
+                }
+        
+                var postImage = new PostImage();
+                postImage.DateAdded = DateTime.Now;
+                postImage.Url = uploadResult.Uri.ToString();
+                postImage.PublicId = uploadResult.PublicId;
+
+                // _repo.Add<PostImage>(postImageToCreate);
+                if (!postFromRepo.PostImages.Any(u=>u.IsMain))
+                    postImage.IsMain = true;
+                postFromRepo.PostImages.Add(postImage);
+            }
+
+           
             // if(userId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
             //     return Unauthorized();
             
@@ -111,14 +156,13 @@ namespace BestCSStudy.API.Controllers
             // userFromRepo.Photos.Add(photo);
             // _repo.Add<PostImage>(postImage);
 
-            // if (await _repo.SaveAll()){
+            if (await _repo.SaveAll()){
 
-            //     var postImageToReturn = _mapper.Map<PostImageForReturnDto>(postImage);
-                
-            //     return CreatedAtRoute("GetPostImage", new {id = postImage.Id}, postImageToReturn);
-            // }
-            return Ok();
-            // return BadRequest("Failed to upload the post image.");
+                var postToReturn = _mapper.Map<PostForDetailsDto>(postToCreate);
+                return CreatedAtRoute("GetPost", new {controller="Posts", id=postToCreate.Id}, postToReturn);
+            }
+         
+            return BadRequest("Failed to create post.");
         }
 
         // [HttpPut("{id}")]

@@ -9,8 +9,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BestCSStudy.API.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20190602003847_Updated on 2019-06-01.")]
-    partial class Updatedon20190601
+    [Migration("20190607045740_InitDatabase")]
+    partial class InitDatabase
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -117,7 +117,7 @@ namespace BestCSStudy.API.Migrations
 
                     b.Property<bool>("IsMain");
 
-                    b.Property<int?>("PostId");
+                    b.Property<int>("PostId");
 
                     b.Property<string>("PublicId");
 
@@ -212,7 +212,8 @@ namespace BestCSStudy.API.Migrations
                 {
                     b.HasOne("BestCSStudy.API.Models.Post", "Post")
                         .WithMany("PostImages")
-                        .HasForeignKey("PostId");
+                        .HasForeignKey("PostId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 #pragma warning restore 612, 618
         }
