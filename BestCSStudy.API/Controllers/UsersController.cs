@@ -18,9 +18,9 @@ namespace BestCSStudy.API.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
-        private readonly IDatingRepository _repo;
+        private readonly IAppRepository _repo;
         private readonly IMapper _mapper;
-        public UsersController(IDatingRepository repo, IMapper mapper)
+        public UsersController(IAppRepository repo, IMapper mapper)
         {
             _mapper = mapper;
             _repo = repo;
@@ -76,19 +76,24 @@ namespace BestCSStudy.API.Controllers
             throw new Exception($"Updating user {id} failed on save");
         }
 
-        [HttpPost("{id}/like/{recipientId}")]
+        [HttpPost("{userId}/likePost/{postId}")]
         public async Task<IActionResult> LikePost(int userId, int postId)
         {
             if (userId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
                 return Unauthorized();
             
+            if (await _repo.GetPost(postId)==null)
+                return NotFound();
+
             var like = await _repo.GetLike(userId, postId);
 
             if (like != null)
-                return BadRequest("You already like this user");
+                return BadRequest("You already liked this post!");
             
-            if (await _repo.GetPost(postId)==null)
-                return NotFound();
+            var dislike = await _repo.GetDislike(userId, postId);
+
+            if (dislike != null)
+                _repo.Delete<Dislike>(dislike);
             
             like = new Like
             {
@@ -101,7 +106,84 @@ namespace BestCSStudy.API.Controllers
             if (await _repo.SaveAll())
                 return Ok();
             
-            return BadRequest("Failed to like user");
+            return BadRequest("Failed to like post!");
+        }
+
+        [HttpPost("{userId}/cancelLikedPost/{postId}")]
+        public async Task<IActionResult> CanceLikedPost(int userId, int postId)
+        {
+            if (userId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
+                return Unauthorized();
+            
+            if (await _repo.GetPost(postId)==null)
+                return NotFound();
+                
+            var like = await _repo.GetLike(userId, postId);
+
+            if (like == null)
+                return BadRequest("You haven't liked this post!");
+   
+            _repo.Delete<Like>(like);
+
+            if (await _repo.SaveAll())
+                return Ok();
+            
+            return BadRequest("Failed to cancel liked post!");
+        }
+
+        [HttpPost("{userId}/dislikePost/{postId}")]
+        public async Task<IActionResult> DislikePost(int userId, int postId)
+        {
+            if (userId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
+                return Unauthorized();
+            
+            if (await _repo.GetPost(postId)==null)
+                return NotFound();
+            
+            var dislike = await _repo.GetDislike(userId, postId);
+
+            if (dislike != null)
+                return BadRequest("You already disliked this post!");
+            
+            var like = await _repo.GetLike(userId, postId);
+
+            if (like != null)
+                _repo.Delete<Like>(like);
+
+            dislike = new Dislike
+            {
+                DislikerId = userId,
+                PostId = postId
+            };
+
+            _repo.Add<Dislike>(dislike);
+
+            if (await _repo.SaveAll())
+                return Ok();
+            
+            return BadRequest("Failed to dislike post!");
+        }
+
+        [HttpPost("{userId}/cancelDislikedPost/{postId}")]
+        public async Task<IActionResult> CancelDislikedPost(int userId, int postId)
+        {
+            if (userId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
+                return Unauthorized();
+            
+            var dislike = await _repo.GetDislike(userId, postId);
+
+            if (dislike == null)
+                return BadRequest("You haven't disliked this post!");
+            
+            if (await _repo.GetPost(postId)==null)
+                return NotFound();
+
+            _repo.Delete<Dislike>(dislike);
+
+            if (await _repo.SaveAll())
+                return Ok();
+            
+            return BadRequest("Failed to cancel disliked post!");
         }
     }
 }

@@ -18,9 +18,9 @@ namespace BestCSStudy.API.Controllers
     [ApiController]
     public class MessagesController : ControllerBase
     {
-        private readonly IDatingRepository _repo;
+        private readonly IAppRepository _repo;
         private readonly IMapper _mapper;
-        public MessagesController(IDatingRepository repo, IMapper mapper)
+        public MessagesController(IAppRepository repo, IMapper mapper)
         {
             _mapper = mapper;
             _repo = repo;

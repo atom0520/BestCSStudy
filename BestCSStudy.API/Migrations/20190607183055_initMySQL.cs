@@ -4,28 +4,10 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace BestCSStudy.API.Migrations
 {
-    public partial class InitDatabase : Migration
+    public partial class initMySQL : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.CreateTable(
-                name: "Posts",
-                columns: table => new
-                {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    Title = table.Column<string>(nullable: true),
-                    Description = table.Column<string>(nullable: true),
-                    Category = table.Column<string>(nullable: true),
-                    Tags = table.Column<string>(nullable: true),
-                    Links = table.Column<string>(nullable: true),
-                    DateAdded = table.Column<DateTime>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Posts", x => x.Id);
-                });
-
             migrationBuilder.CreateTable(
                 name: "Users",
                 columns: table => new
@@ -60,53 +42,6 @@ namespace BestCSStudy.API.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Values", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "PostImages",
-                columns: table => new
-                {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    Url = table.Column<string>(nullable: true),
-                    DateAdded = table.Column<DateTime>(nullable: false),
-                    IsMain = table.Column<bool>(nullable: false),
-                    PublicId = table.Column<string>(nullable: true),
-                    PostId = table.Column<int>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_PostImages", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_PostImages_Posts_PostId",
-                        column: x => x.PostId,
-                        principalTable: "Posts",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Likes",
-                columns: table => new
-                {
-                    LikerId = table.Column<int>(nullable: false),
-                    PostId = table.Column<int>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Likes", x => new { x.LikerId, x.PostId });
-                    table.ForeignKey(
-                        name: "FK_Likes_Users_LikerId",
-                        column: x => x.LikerId,
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Likes_Posts_PostId",
-                        column: x => x.PostId,
-                        principalTable: "Posts",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -165,6 +100,108 @@ namespace BestCSStudy.API.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Posts",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    Title = table.Column<string>(nullable: true),
+                    Description = table.Column<string>(nullable: true),
+                    Category = table.Column<string>(nullable: true),
+                    Tags = table.Column<string>(nullable: true),
+                    Links = table.Column<string>(nullable: true),
+                    Created = table.Column<DateTime>(nullable: false),
+                    Updated = table.Column<DateTime>(nullable: false),
+                    AuthorId = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Posts", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Posts_Users_AuthorId",
+                        column: x => x.AuthorId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Dislike",
+                columns: table => new
+                {
+                    DislikerId = table.Column<int>(nullable: false),
+                    PostId = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Dislike", x => new { x.DislikerId, x.PostId });
+                    table.ForeignKey(
+                        name: "FK_Dislike_Users_DislikerId",
+                        column: x => x.DislikerId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Dislike_Posts_PostId",
+                        column: x => x.PostId,
+                        principalTable: "Posts",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Likes",
+                columns: table => new
+                {
+                    LikerId = table.Column<int>(nullable: false),
+                    PostId = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Likes", x => new { x.LikerId, x.PostId });
+                    table.ForeignKey(
+                        name: "FK_Likes_Users_LikerId",
+                        column: x => x.LikerId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Likes_Posts_PostId",
+                        column: x => x.PostId,
+                        principalTable: "Posts",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PostImages",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    Url = table.Column<string>(nullable: true),
+                    DateAdded = table.Column<DateTime>(nullable: false),
+                    IsMain = table.Column<bool>(nullable: false),
+                    PublicId = table.Column<string>(nullable: true),
+                    PostId = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PostImages", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_PostImages_Posts_PostId",
+                        column: x => x.PostId,
+                        principalTable: "Posts",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Dislike_PostId",
+                table: "Dislike",
+                column: "PostId");
+
             migrationBuilder.CreateIndex(
                 name: "IX_Likes_PostId",
                 table: "Likes",
@@ -189,10 +226,18 @@ namespace BestCSStudy.API.Migrations
                 name: "IX_PostImages_PostId",
                 table: "PostImages",
                 column: "PostId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Posts_AuthorId",
+                table: "Posts",
+                column: "AuthorId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "Dislike");
+
             migrationBuilder.DropTable(
                 name: "Likes");
 
@@ -209,10 +254,10 @@ namespace BestCSStudy.API.Migrations
                 name: "Values");
 
             migrationBuilder.DropTable(
-                name: "Users");
+                name: "Posts");
 
             migrationBuilder.DropTable(
-                name: "Posts");
+                name: "Users");
         }
     }
 }

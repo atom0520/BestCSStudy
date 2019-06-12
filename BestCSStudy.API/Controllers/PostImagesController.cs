@@ -18,12 +18,12 @@ namespace BestCSStudy.API.Controllers
     [Route("api/postImages")]
     public class PostImagesController : ControllerBase
     {
-        private readonly IDatingRepository _repo;
+        private readonly IAppRepository _repo;
         private readonly IMapper _mapper;
         private readonly IOptions<CloudinarySettings> _cloudinaryConfig;
         private Cloudinary _cloudinary;
 
-        public PostImagesController(IDatingRepository repo, IMapper mapper, IOptions<CloudinarySettings> cloudinaryConfig)
+        public PostImagesController(IAppRepository repo, IMapper mapper, IOptions<CloudinarySettings> cloudinaryConfig)
         {
             _cloudinaryConfig = cloudinaryConfig;
             _mapper = mapper;

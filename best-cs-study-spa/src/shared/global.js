@@ -68,3 +68,8 @@ export const postCategoryOptions = [
     {value:'videos', display:'Videos'},
     {value:'others', display:'Others'},
 ];
+
+export const genderOptions = [
+    {value:'male', display:'Male'}, 
+    {value:'female', display:'Female'}
+];

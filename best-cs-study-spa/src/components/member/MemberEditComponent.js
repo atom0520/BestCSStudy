@@ -9,6 +9,7 @@ import { Prompt } from 'react-router-dom';
 import PhotoEditor from './PhotoEditorComponent';
 import ImgUser from '../../shared/img/user.png';
 import TimeAgo from 'react-timeago'
+import { genderOptions } from "../../shared/global";
 
 const mapStateToProps = state => {
     return {
@@ -29,15 +30,38 @@ class MemberEdit extends Component {
         this.state = {
             user: null,
             profileForm: {
-                dirty:false,
-                touched: {
-                    introduction: false,
-                    lookingFor: false,
-                    interests: false,
-                    city: false,
-                    country: false
-                }
+                fields:{
+                   
+                    introduction: {
+                        value:''
+                    },
+                    gender:{
+                        value:''
+                    },
+                    dateOfBirth:{
+                        value:''
+                    },
+                    country: {
+                        value:''
+                    },
+                    city: {
+                        value:''
+                    },
+                },
+                valid: false,
+                touched: false,
+                dirty: false,
             }
+            // profileForm: {
+            //     dirty:false,
+            //     touched: {
+            //         introduction: false,
+            //         lookingFor: false,
+            //         interests: false,
+            //         city: false,
+            //         country: false
+            //     }
+            // }
         }
 
         this.handleInputChangeProfileForm = this.handleInputChangeProfileForm.bind(this);
@@ -56,7 +80,8 @@ class MemberEdit extends Component {
         setTimeout(this.props.fetchUser(
             this.props.auth.decodedToken.nameid,
             (user)=>{   
-                alertifyService.success('Fetched your profile successfully!');                   
+                alertifyService.success('Fetched your profile successfully!');
+                console.log(user);                   
                 this.setState({
                     user: user
                 });
@@ -122,32 +147,48 @@ class MemberEdit extends Component {
     }
 
     handleInputChangeProfileForm(event){
-
         const target = event.target;
         const value = target.value;
         const name = target.name;
 
+        let form = this.state.form;
+        form.fields[name].value = value;
+
+        form = this.validateForm(form);
+
         this.setState({
-            user: {...this.state.user, 
-                [name]: value
-            },
-            profileForm: {...this.state.profileForm, dirty: true}
+            form: form
+        });
+    }
+
+    handleBlurProfileForm = (event) => {
+        const target = event.target;
+        const name = target.name;
+
+        let form = this.state.form;
+        form.fields[name].touched = true;
+        form.touched = true;
+
+        form = this.validateForm(form);
+
+        this.setState({
+            form: form
         });
     }
 
     handleSubmitProfileForm(event) {
         event.preventDefault();
-        this.props.updateUser(this.props.auth.decodedToken.nameid,
-            this.state.user,
-            ()=>{
-                alertifyService.success('Updated your profile successfully!');
-                this.setState({
-                    profileForm: {...this.state.profileForm, dirty: false}
-                });
-            },
-            error=>{
-                alertifyService.error(error.message);
-            });
+        // this.props.updateUser(this.props.auth.decodedToken.nameid,
+        //     this.state.user,
+        //     ()=>{
+        //         alertifyService.success('Updated your profile successfully!');
+        //         this.setState({
+        //             profileForm: {...this.state.profileForm, dirty: false}
+        //         });
+        //     },
+        //     error=>{
+        //         alertifyService.error(error.message);
+        //     });
     }
 
     handleBlurProfileForm = (field) => (evt) => {
@@ -155,6 +196,11 @@ class MemberEdit extends Component {
             profileForm: {...this.state.profileForm, touched: {...this.state.profileForm.touched, [field]: true} }
         });
     }
+
+    showFormFieldError(name){
+        // return this.state.form.fields[name].error && this.state.form.fields[name].touched
+    }
+
 
     render() { 
         return(     
@@ -181,27 +227,27 @@ class MemberEdit extends Component {
                     </div>                   
                 </div>
                 <div className="row">
-                    <div className="col-sm-4">
+                    <div className="col-md-4">
                         <div className="card">
                             <div className="p-3">
                             <img className="card-img-top img-thumbnail" src={this.state.user?this.state.user.photoUrl||ImgUser:ImgUser} alt={this.state.user?this.state.user.knownAs:''}/>
                             </div>
                             <div className={"card-body "+styles.cardBody}>
-                                <div className="text-left">
+                                {/* <div className="text-left">
                                     <strong>Location:</strong>
                                     <p>{this.state.user?this.state.user.city:''}, {this.state.user?this.state.user.country:''}</p>
                                 </div>
                                 <div className="text-left">
                                     <strong>Age:</strong>
                                     <p>{this.state.user?this.state.user.age:''}</p>
-                                </div>
+                                </div> */}
                                 <div className="text-left">
-                                    <strong>Last Active:</strong>
+                                    <strong>Last Active At:</strong>
                                     <p>{this.state.user?<TimeAgo date={this.state.user.lastActive} live={false}/>:null}</p>
                                     {/* <p>{this.state.user?this.state.user.lastActive:''}</p> */}
                                 </div>
                                 <div className="text-left">
-                                    <strong>Member Since:</strong>
+                                    <strong>Register At:</strong>
                                     {/* <p>{this.state.user?this.state.user.created:''}</p> */}
                                     <p>{this.state.user?(new Date(this.state.user.created)).toLocaleDateString("en-US", { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric'}):''}</p>
                                 </div>
@@ -212,51 +258,101 @@ class MemberEdit extends Component {
                         </div>
                         
                     </div>
-                    <div className="col-sm-8">
+                    <div className="col-md-8">
                         <div className="tab-panel">
                             <Tabs className="member-tabs" defaultActiveKey="edit-profile">
                                 <Tab className="text-left" eventKey="edit-profile" title="Edit Profile">
-                                    <form id="profile-form" onSubmit={this.handleSubmitProfileForm}>
-                                        <h4>Description</h4>
-                                        <textarea rows="6" className="form-control"
-                                            name="introduction"
-                                            value={this.state.user?this.state.user.introduction||'':''}
-                                            onChange={this.handleInputChangeProfileForm}
-                                            onBlur={this.handleBlurProfileForm('introduction')}
-                                        >
-                                        </textarea>
-                                        <h4>Looking For</h4>
-                                        <textarea rows="6" className="form-control"
-                                            name="lookingFor"
-                                            value={this.state.user?this.state.user.lookingFor||'':''}
-                                            onChange={this.handleInputChangeProfileForm}
-                                            onBlur={this.handleBlurProfileForm('lookingFor')}
-                                        ></textarea>
-                                        <h4>Interests</h4>
-                                        <textarea rows="6" className="form-control"
-                                            name="interests" 
-                                            value={this.state.user?this.state.user.interests||'':''}
-                                            onChange={this.handleInputChangeProfileForm}
-                                            onBlur={this.handleBlurProfileForm('interests')}
-                                        ></textarea>
-                                        <h4>Location Details</h4>
+                                  
+                                    <form id="profile-form" className="mt-3 mx-2" noValidate onSubmit={this.handleSubmitProfileForm}>
+                                        
+                                        <div className="form-group row text-left ">
+                                            <label className="col-sm-2 col-form-label font-weight-bold">Introduction</label>
+                                            <div className="col-sm">
+                                                <textarea name="introduction" type="text" className={"form-control "+(this.showFormFieldError('introduction')?'is-invalid':'')} placeholder="Write something about yourself..."
+                                                    value={this.state.profileForm.fields.introduction.value}
+                                                    onChange={this.handleInputChangeProfileForm}
+                                                    onBlur={this.handleBlurProfileForm}
+                                                    
+                                                />
+                                                <div className="invalid-feedback">{this.showFormFieldError('description')?this.state.form.fields.description.error:''}</div>
+                                            </div>
+                                        </div>
+                                        <div className="form-group row text-left">
+                                            <label className="col-sm-2 col-form-label font-weight-bold">Gender</label>
+                                            <div className="col-sm col-lg-4 col-md-6">
+                                                <select name="gender" className={"form-control "+(this.showFormFieldError('gender')?'is-invalid':'')} 
+                                                    value={this.state.profileForm.fields.gender.value}
+                                                    onChange={this.handleInputChangeProfileForm}
+                                                    onBlur={this.handleBlurProfileForm}
+                                                >
+                                                <option disabled value='' style={{display:"none"}}></option>
+                                                {
+                                                        genderOptions.map(gender=>{
+                                                        return (
+                                                            <option key={gender.value} value={gender.value}>
+                                                                { gender.display }
+                                                            </option>
+                                                        );
+                                                    })
+                                                }
+                                                </select>
+                                                <div className="invalid-feedback">{this.showFormFieldError('gender')?this.state.form.fields.gender.error:''}</div>
+                                            </div>
+                                        </div>
+                                        <div className="form-group row text-left">
+                                            <label className="col-sm-2 col-form-label font-weight-bold">Date of Birth</label>
+                                            <div className="col-sm col-lg-4 col-md-6">
+                                                <input name="dateOfBirth" type="date" className={"form-control "+(this.showFormFieldError('title')?'is-invalid':'')} placeholder="Name of the Study Resource"
+                                                    value={this.state.profileForm.fields.dateOfBirth.value}
+                                                    onChange={this.handleInputChangeProfileForm}
+                                                    onBlur={this.handleBlurProfileForm}
+                                                />
+                                                <div className="invalid-feedback">{this.showFormFieldError('gender')?this.state.form.fields.gender.error:''}</div>
+                                            </div>
+                                        </div>
+                            
+                                        <div className="form-group row text-left">
+                                            <label className="col-sm-2 col-form-label font-weight-bold">Country</label>
+                                            <div className="col-sm col-lg-4 col-md-6">
+                                                <input name="country" type="text" className={"form-control "+(this.showFormFieldError('title')?'is-invalid':'')} placeholder="Country"
+                                                    value={this.state.profileForm.fields.country.value}
+                                                    onChange={this.handleInputChangeProfileForm}
+                                                    onBlur={this.handleBlurProfileForm}
+                                                />
+                                                <div className="invalid-feedback">{this.showFormFieldError('country')?this.state.form.fields.gender.error:''}</div>
+                                            </div>
+                                        </div>
+                                        <div className="form-group row text-left">
+                                            <label className="col-sm-2 col-form-label font-weight-bold">City</label>
+                                            <div className="col-sm col-lg-4 col-md-6">
+                                                <input name="title" type="text" className={"form-control "+(this.showFormFieldError('title')?'is-invalid':'')} placeholder="City"
+                                                    value={this.state.profileForm.fields.city.value}
+                                                    onChange={this.handleInputChangeProfileForm}
+                                                    onBlur={this.handleBlurProfileForm}
+                                                />
+                                                <div className="invalid-feedback">{this.showFormFieldError('gender')?this.state.form.fields.gender.error:''}</div>
+                                            </div>
+                                        </div>
+                                       
+                                        {/* <h4>Location Details</h4>
                                         <div className="form-inline">
                                             <label >City</label>
                                             <input className="form-control" type="text"
                                                 name="city" 
-                                                value={this.state.user?this.state.user.city:''}
+                                                value={this.state.user?this.state.user.city||'':''}
                                                 onChange={this.handleInputChangeProfileForm}
                                                 onBlur={this.handleBlurProfileForm('city')}
                                             ></input>
                                             <label >Country</label>
                                             <input className="form-control" type="text"
                                                  name="country" 
-                                                 value={this.state.user?this.state.user.country:''}
+                                                 value={this.state.user?this.state.user.country||'':''}
                                                  onChange={this.handleInputChangeProfileForm}
                                                  onBlur={this.handleBlurProfileForm('country')}
                                             ></input>
-                                        </div>
+                                        </div> */}
                                     </form>
+                                   
                                 </Tab>
                                 <Tab className="text-left" eventKey="edit-photos" title="Edit Photos">
                                     <PhotoEditor 

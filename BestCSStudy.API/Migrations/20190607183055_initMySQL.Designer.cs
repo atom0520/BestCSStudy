@@ -9,8 +9,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BestCSStudy.API.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20190607045740_InitDatabase")]
-    partial class InitDatabase
+    [Migration("20190607183055_initMySQL")]
+    partial class initMySQL
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -18,6 +18,19 @@ namespace BestCSStudy.API.Migrations
             modelBuilder
                 .HasAnnotation("ProductVersion", "2.2.4-servicing-10062")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
+
+            modelBuilder.Entity("BestCSStudy.API.Models.Dislike", b =>
+                {
+                    b.Property<int>("DislikerId");
+
+                    b.Property<int>("PostId");
+
+                    b.HasKey("DislikerId", "PostId");
+
+                    b.HasIndex("PostId");
+
+                    b.ToTable("Dislike");
+                });
 
             modelBuilder.Entity("BestCSStudy.API.Models.Like", b =>
                 {
@@ -91,9 +104,11 @@ namespace BestCSStudy.API.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<int>("AuthorId");
+
                     b.Property<string>("Category");
 
-                    b.Property<DateTime>("DateAdded");
+                    b.Property<DateTime>("Created");
 
                     b.Property<string>("Description");
 
@@ -103,7 +118,11 @@ namespace BestCSStudy.API.Migrations
 
                     b.Property<string>("Title");
 
+                    b.Property<DateTime>("Updated");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("AuthorId");
 
                     b.ToTable("Posts");
                 });
@@ -174,6 +193,19 @@ namespace BestCSStudy.API.Migrations
                     b.ToTable("Values");
                 });
 
+            modelBuilder.Entity("BestCSStudy.API.Models.Dislike", b =>
+                {
+                    b.HasOne("BestCSStudy.API.Models.User", "Disliker")
+                        .WithMany("DislikedPosts")
+                        .HasForeignKey("DislikerId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("BestCSStudy.API.Models.Post", "Post")
+                        .WithMany("Dislikers")
+                        .HasForeignKey("PostId")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
             modelBuilder.Entity("BestCSStudy.API.Models.Like", b =>
                 {
                     b.HasOne("BestCSStudy.API.Models.User", "Liker")
@@ -205,6 +237,14 @@ namespace BestCSStudy.API.Migrations
                     b.HasOne("BestCSStudy.API.Models.User", "User")
                         .WithMany("Photos")
                         .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("BestCSStudy.API.Models.Post", b =>
+                {
+                    b.HasOne("BestCSStudy.API.Models.User", "Author")
+                        .WithMany("Posts")
+                        .HasForeignKey("AuthorId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

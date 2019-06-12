@@ -8,10 +8,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BestCSStudy.API.Data
 {
-    public class DatingRepository : IDatingRepository
+    public class AppRepository : IAppRepository
     {
         private readonly DataContext _context;
-        public DatingRepository(DataContext context)
+        public AppRepository(DataContext context)
         {
             _context = context;
         }
@@ -29,6 +29,10 @@ namespace BestCSStudy.API.Data
         public async Task<Like> GetLike(int userId, int postId)
         {
             return await _context.Likes.FirstOrDefaultAsync(e=>e.LikerId==userId&&e.PostId==postId);
+        }
+        public async Task<Dislike> GetDislike(int userId, int postId)
+        {
+            return await _context.Dislikes.FirstOrDefaultAsync(e=>e.DislikerId==userId&&e.PostId==postId);
         }
 
         public async Task<Photo> GetMainPhotoForUser(int userId)
@@ -51,13 +55,13 @@ namespace BestCSStudy.API.Data
         }
         public async Task<User> GetUser(int id)
         {
-            var user = await _context.Users.Include(p => p.Photos).FirstOrDefaultAsync(u => u.Id == id);
+            var user = await _context.Users.Include(p => p.Photos).Include(p => p.Posts).FirstOrDefaultAsync(u => u.Id == id);
 
             return user;
         }
         public async Task<Post> GetPost(int id)
         {
-            var post = await _context.Posts.Include(p => p.PostImages).FirstOrDefaultAsync(p => p.Id == id);
+            var post = await _context.Posts.Include(p => p.PostImages).Include(p => p.Author).Include(p => p.Likers).Include(p => p.Dislikers).FirstOrDefaultAsync(p => p.Id == id);
 
             return post;
         }
@@ -178,7 +182,6 @@ namespace BestCSStudy.API.Data
             
             return messages;
         }
-
 
     }
 }

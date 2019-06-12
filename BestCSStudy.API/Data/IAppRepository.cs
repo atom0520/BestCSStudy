@@ -5,7 +5,7 @@ using BestCSStudy.API.Models;
 
 namespace BestCSStudy.API.Data
 {
-    public interface IDatingRepository
+    public interface IAppRepository
     {
          void Add<T>(T entity) where T: class;
          void Delete<T>(T entity) where T: class;
@@ -16,7 +16,8 @@ namespace BestCSStudy.API.Data
          Task<Photo> GetPhoto(int id);
          Task<PostImage> GetPostImage(int id);
          Task<Photo> GetMainPhotoForUser(int userId);
-         Task<Like> GetLike(int userId, int recipientId);
+         Task<Like> GetLike(int userId, int postId);
+         Task<Dislike> GetDislike(int userId, int postId);
          Task<Message> GetMessage(int id);
          Task<PagedList<Message>> GetMessagesForUser(MessageParams messageParams);
          Task<IEnumerable<Message>> GetMessageThread(int userId, int recipientId);

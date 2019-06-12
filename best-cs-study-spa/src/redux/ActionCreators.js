@@ -378,6 +378,46 @@ export const fetchUser = (id, onSuccess, onError) => (dispatch, getState) => {
     });
 }
 
+export const fetchPost = (id, onSuccess, onError) => (dispatch, getState) => {
+
+    return fetch(baseUrl + 'posts/' + id)
+    .then(response => {
+        if(response.ok){
+            response.json()
+            .then(post => {
+                // dispatch(addUser(user));
+                if(onSuccess){
+                    onSuccess(post);
+                }
+            })
+            .catch(error=>{
+                
+                if(onError){
+                    onError(error);
+                }
+            });
+
+        } else {
+            handleFetchResponseNotOkError(response,
+            error=>{
+                
+                if(onError){
+                    onError(error);
+                }
+            });
+        }
+    },
+    error => {
+        throw error;
+    })
+    .catch(error => {
+        
+        if(onError){
+            onError(onError);
+        }
+    });
+}
+
 export const addUser = (user) => ({
     type: ActionTypes.ADD_USER,
     user
@@ -803,7 +843,7 @@ export const uploadPostImage = (file, onSuccess, onError) => (dispatch) => {
     })
 };
 
-export const createPost = (title, description, category, tags, links, images, onSuccess, onError) => (dispatch) => {
+export const createPost = (title, description, category, tags, links, images, mainImage, onSuccess, onError) => (dispatch) => {
     let formData = new FormData();
     formData.append('title', title);
     formData.append('description', description);
@@ -813,6 +853,7 @@ export const createPost = (title, description, category, tags, links, images, on
     for(let i=0; i<images.length; i++){
         formData.append(`image${i+1}`, images[i]);
     }
+    formData.append('mainImage', mainImage);
     // formData.append(`images`, images);
 
     return fetch(baseUrl + `posts`, {
@@ -848,6 +889,142 @@ export const createPost = (title, description, category, tags, links, images, on
             throw error;
         })
     .catch(error=>{
+        if(onError){
+            onError(error);
+        }
+    })
+};
+
+export const likePost = (userId, postId, onSuccess, onError) => (dispatch) => {
+
+    return fetch(baseUrl + `users/${userId}/likePost/${postId}`, {
+        method: 'POST',
+    })
+    .then(response=>{
+
+            if(response.ok){
+                if(onSuccess){
+                    onSuccess();
+                }
+            } else {
+                
+                handleFetchResponseNotOkError(response,
+                error=>{
+       
+                    if(onError){
+                        onError(error);
+                    }
+                });
+
+            }
+        },
+        error=>{
+            throw error;
+        })
+    .catch(error=>{
+
+        if(onError){
+            onError(error);
+        }
+    })
+};
+
+export const cancelLikedPost = (userId, postId, onSuccess, onError) => (dispatch) => {
+
+    return fetch(baseUrl + `users/${userId}/cancelLikedPost/${postId}`, {
+        method: 'POST',
+    })
+    .then(response=>{
+
+            if(response.ok){
+                if(onSuccess){
+                    onSuccess();
+                }
+            } else {
+                
+                handleFetchResponseNotOkError(response,
+                error=>{
+       
+                    if(onError){
+                        onError(error);
+                    }
+                });
+
+            }
+        },
+        error=>{
+            throw error;
+        })
+    .catch(error=>{
+
+        if(onError){
+            onError(error);
+        }
+    })
+};
+
+export const dislikePost = (userId, postId, onSuccess, onError) => (dispatch) => {
+
+    return fetch(baseUrl + `users/${userId}/dislikePost/${postId}`, {
+        method: 'POST',
+    })
+    .then(response=>{
+
+            if(response.ok){
+                if(onSuccess){
+                    onSuccess();
+                }
+            } else {
+                
+                handleFetchResponseNotOkError(response,
+                error=>{
+       
+                    if(onError){
+                        onError(error);
+                    }
+                });
+
+            }
+        },
+        error=>{
+            throw error;
+        })
+    .catch(error=>{
+
+        if(onError){
+            onError(error);
+        }
+    })
+};
+
+export const cancelDislikedPost = (userId, postId, onSuccess, onError) => (dispatch) => {
+
+    return fetch(baseUrl + `users/${userId}/cancelDislikedPost/${postId}`, {
+        method: 'POST',
+    })
+    .then(response=>{
+
+            if(response.ok){
+                if(onSuccess){
+                    onSuccess();
+                }
+            } else {
+                
+                handleFetchResponseNotOkError(response,
+                error=>{
+       
+                    if(onError){
+                        onError(error);
+                    }
+                });
+
+            }
+        },
+        error=>{
+            throw error;
+        })
+    .catch(error=>{
+
         if(onError){
             onError(error);
         }

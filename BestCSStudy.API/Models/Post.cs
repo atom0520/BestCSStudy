@@ -12,7 +12,11 @@ namespace BestCSStudy.API.Models
         public string Tags { get; set; }
         public string Links { get; set; }
         public ICollection<PostImage> PostImages { get; set; }
-        public DateTime DateAdded { get; set; }
+        public DateTime Created { get; set; }
+        public DateTime Updated { get; set; }
         public ICollection<Like> Likers { get; set; }
+        public ICollection<Dislike> Dislikers { get; set; }
+        public User Author { get; set; }
+        public int AuthorId { get; set; }
     }
 }

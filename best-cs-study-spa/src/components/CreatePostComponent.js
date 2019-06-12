@@ -10,6 +10,7 @@ import Autosuggest from 'react-autosuggest'
 import './CreatePostComponent.css';
 import Dropzone, {useDropzone} from 'react-dropzone';
 import { required, minLength, maxLength } from '../shared/validators';
+import styles from './CreatePostComponent.module.scss';
 
 function states () {
     return [
@@ -504,6 +505,7 @@ class CreatePost extends Component {
             this.state.form.fields.tags.value.join('|'),
             encodedLinkValues.join(','),
             this.state.form.fields.images.value,
+            this.state.form.mainImage,
             (user)=>{
                 alertifyService.success("Created post successfully!");
             },
@@ -530,7 +532,7 @@ class CreatePost extends Component {
                                         value={this.state.form.fields.title.value}
                                         onChange={this.handleInputChangeForm}
                                         onBlur={this.handleBlurForm}
-                                        minlength={minTitleLength} maxlength={maxTitleLength}
+                                        minLength={minTitleLength} maxLength={maxTitleLength}
                                     />
                                     <div className="invalid-feedback">{this.showFormFieldError('title')?this.state.form.fields.title.error:''}</div>
                                 </div>
@@ -542,7 +544,7 @@ class CreatePost extends Component {
                                         value={this.state.form.fields.description.value}
                                         onChange={this.handleInputChangeForm}
                                         onBlur={this.handleBlurForm}
-                                        minlength={minDescriptionLength} maxlength={maxDescriptionLength}
+                                        minLength={minDescriptionLength} maxLength={maxDescriptionLength}
                                     />
                                     <div className="invalid-feedback">{this.showFormFieldError('description')?this.state.form.fields.description.error:''}</div>
                                 </div>
@@ -632,7 +634,7 @@ class CreatePost extends Component {
                                     <div className="mx-0 px-0 col-sm-12 col-md-6 col-lg-4 mb-2">
                                         <Dropzone onFileDialogCancel={this.onImageFileDialogCancel} onDropAccepted={this.onInputAcceptedImage} onDropRejected={this.onInputRejectedImage} accept="image/*" noDrag>
                                             {({getRootProps, getInputProps}) => (
-                                            <label htmlFor="input-image" {...getRootProps({tabIndex:null, className: 'label-input-image '+(this.showFormFieldError('images')?'is-invalid':'')})}>                            
+                                            <label htmlFor="input-image" {...getRootProps({tabIndex:null, className: styles.labelInputImage+" "+(this.showFormFieldError('images')?styles.isInvalid:"")})}>                            
                                                 <input id="input-image" {...getInputProps({
                                                     // name:"images",
                                                     // onBlur:this.handleBlurForm
@@ -646,10 +648,10 @@ class CreatePost extends Component {
                                     <div className="row mx-0 px-0 mb-2">
                                     {
                                         this.state.form.fields.images.value.map((image,index)=>{
-                                            return(
+                                            return(                          
                                                 image.src!=null?
                                                 <div key={index} className="col-sm-6 col-md-4 col-lg-3 mb-4 text-center">
-                                                    <img src={image.src} className="img-thumbnail" alt="" />
+                                                    <img src={image.src} className={styles.imgThumbnail} alt="" />
                                                     <div className="text-center mt-1">
                                                         <button type="button" className={"mr-1 btn btn-sm "+(index==this.state.form.mainImage?"btn-success active":"btn-secondary")} 
                                                             onClick={(e)=>{this.setMainImage(index)}}

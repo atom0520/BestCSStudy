@@ -16,11 +16,13 @@ namespace BestCSStudy.API.Dtos
         public IFormFile Image3 { get; set; }
         public IFormFile Image4 { get; set; }
         public IFormFile Image5 { get; set; }
-        public DateTime DateAdded { get; set; }
-
+        public int MainImage { get; set; }
+        public DateTime Created { get; set; }
+        public DateTime Updated { get; set; }
         public PostForCreationDto()
         {
-            DateAdded = DateTime.Now;
+            Created = DateTime.Now;
+            Updated = DateTime.Now;
         }
     }
 }

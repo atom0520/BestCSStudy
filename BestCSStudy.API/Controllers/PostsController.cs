@@ -23,11 +23,11 @@ namespace BestCSStudy.API.Controllers
     [ApiController]
     public class PostsController : ControllerBase
     {
-        private readonly IDatingRepository _repo;
+        private readonly IAppRepository _repo;
         private readonly IMapper _mapper;
         private readonly IOptions<CloudinarySettings> _cloudinaryConfig;
         private Cloudinary _cloudinary;
-        public PostsController(IDatingRepository repo, IMapper mapper, IOptions<CloudinarySettings> cloudinaryConfig)
+        public PostsController(IAppRepository repo, IMapper mapper, IOptions<CloudinarySettings> cloudinaryConfig)
         {
             _cloudinaryConfig = cloudinaryConfig;
             _mapper = mapper;
@@ -74,15 +74,20 @@ namespace BestCSStudy.API.Controllers
          [HttpPost]
         public async Task<IActionResult> CreatePost([FromForm]PostForCreationDto postForCreationDto)
         {
-            var postToCreate = new Post();
+            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            
+            var userFromRepo = await _repo.GetUser(userId);
+            // var postToCreate = new Post();
 
-            postToCreate.Title = postForCreationDto.Title;
-            postToCreate.Description = postForCreationDto.Description;
-            postToCreate.Category = postForCreationDto.Category;
-            postToCreate.Tags = postForCreationDto.Tags;
-            postToCreate.Links = postForCreationDto.Links;
-            postToCreate.DateAdded = postForCreationDto.DateAdded;
-            _repo.Add<Post>(postToCreate);
+            // postToCreate.Title = postForCreationDto.Title;
+            // postToCreate.Description = postForCreationDto.Description;
+            // postToCreate.Category = postForCreationDto.Category;
+            // postToCreate.Tags = postForCreationDto.Tags;
+            // postToCreate.Links = postForCreationDto.Links;
+            // postToCreate.Created = postForCreationDto.Created;
+            var postToCreate = _mapper.Map<Post>(postForCreationDto);
+            userFromRepo.Posts.Add(postToCreate);
+            // _repo.Add<Post>(postToCreate);
             await _repo.SaveAll();
             
             var postFromRepo = await _repo.GetPost(postToCreate.Id);
@@ -95,7 +100,8 @@ namespace BestCSStudy.API.Controllers
                 postForCreationDto.Image5
                 };
             
-            foreach(var file in files){
+            for(int i=0; i<files.Length; i++){
+                var file = files[i];
                 if(file==null || file.Length <= 0) continue;
                 var uploadResult = new ImageUploadResult();
      
@@ -116,7 +122,7 @@ namespace BestCSStudy.API.Controllers
                 postImage.PublicId = uploadResult.PublicId;
 
                 // _repo.Add<PostImage>(postImageToCreate);
-                if (!postFromRepo.PostImages.Any(u=>u.IsMain))
+                if (i==postForCreationDto.MainImage)
                     postImage.IsMain = true;
                 postFromRepo.PostImages.Add(postImage);
             }
