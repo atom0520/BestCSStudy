@@ -6,3 +6,10 @@
     font-size: 2rem !important;
     padding: 15px 15px !important;
 }
+
+@media (max-width: 576px) {
+    .btn-block-xs-only {
+        display: block;
+        width: 100%;
+    }
+}

@@ -62,6 +62,17 @@ namespace BestCSStudy.API.Helpers
                 .ForMember(dest=>dest.Dislikers, opt=>{
                     opt.MapFrom(d=>d.Dislikers.Select(u=>u.DislikerId));
                 });
+            
+             CreateMap<Post, LikedPostDto>()
+                .ForMember(dest=>dest.MainPostImageUrl, opt=>{
+                    opt.MapFrom(src => src.PostImages.FirstOrDefault(p => p.IsMain).Url);
+                })
+                .ForMember(dest=>dest.Likers, opt=>{
+                    opt.MapFrom(d=>d.Likers.Select(u=>u.LikerId));
+                })
+                .ForMember(dest=>dest.Dislikers, opt=>{
+                    opt.MapFrom(d=>d.Dislikers.Select(u=>u.DislikerId));
+                });
         }
     }
 }

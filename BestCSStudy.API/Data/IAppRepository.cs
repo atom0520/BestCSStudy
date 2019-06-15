@@ -16,6 +16,7 @@ namespace BestCSStudy.API.Data
          Task<User> GetUser(int id);
          Task<Photo> GetPhoto(int id);
          Task<PostImage> GetPostImage(int id);
+         Task<PostImage> GetPostMainImage(int id);
          Task<Photo> GetMainPhotoForUser(int userId);
          Task<Like> GetLike(int userId, int postId);
          Task<Dislike> GetDislike(int userId, int postId);

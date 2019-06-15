@@ -15,5 +15,8 @@ namespace BestCSStudy.API.Helpers
         public string Category { get; set; }
         public string Search { get; set; }
         public string OrderBy { get; set; }
+        public bool Liked { get; set; }
+        public bool Disliked { get; set; }
+        public bool UserPosts { get; set; }
     }
 }

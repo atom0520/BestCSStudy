@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { Pagination } from 'react-bootstrap';
-import { fetchPosts, likePost, cancelLikedPost, dislikePost, cancelDislikedPost } from '../redux/ActionCreators';
+import { fetchLikedPosts, likePost, cancelLikedPost, dislikePost, cancelDislikedPost } from '../redux/ActionCreators';
 import { alertifyService } from '../services/AlertifyService';
 import { connect } from 'react-redux';
 import { postCategoryOptions } from "../shared/global";
@@ -14,8 +14,8 @@ const mapStateToProps = state => {
 }
 
 const mapDispatchToProps = dispatch => ({
-    fetchPosts: (pageNumber, pageSize, postParams, onSuccess, onError) => { 
-        dispatch(fetchPosts(pageNumber, pageSize, postParams, onSuccess, onError)); },
+    fetchLikedPosts: (userId, pageNumber, pageSize, postParams, onSuccess, onError) => { 
+        dispatch(fetchLikedPosts(userId, pageNumber, pageSize, postParams, onSuccess, onError)); },
     likePost: (userId, postId, onSuccess, onError) => { dispatch(likePost(userId, postId, onSuccess, onError)); },
     cancelLikedPost: (userId, postId, onSuccess, onError) => { dispatch(cancelLikedPost(userId, postId, onSuccess, onError)); },
     dislikePost: (userId, postId, onSuccess, onError) => { dispatch(dislikePost(userId, postId, onSuccess, onError)); },
@@ -23,14 +23,11 @@ const mapDispatchToProps = dispatch => ({
 });
 
 const orderByOptions = [
-    {value:'relevance', display:'Most Relevant'}, 
-    {value:'updated', display:'Updated Time'}, 
-    {value:'created', display:'Created Time'}, 
-    {value:'likes', display:'Most Liked'},
-    {value:'dislikes', display:'Most Disliked'}
+    {value:'likedTime', display:'Liked Time'},
+    {value:'updated', display:'Updated Time'}
 ]
 
-class Posts extends Component {
+class LikedPosts extends Component {
     constructor(props) {
         super(props);
 
@@ -38,8 +35,7 @@ class Posts extends Component {
             posts: null,
             postParams:{
                 category: "",
-                search: "",
-                orderBy: "updated"
+                orderBy: "likedTime"
             },
             pagination: {
                 currentPage: 1,
@@ -185,8 +181,9 @@ class Posts extends Component {
     }
 
     loadPosts(pageIndex){
-        console.log('PostsComponent.loadPosts',this.state.postParams);
-        this.props.fetchPosts(
+        console.log('LikedPostsComponent.loadPosts',this.state.postParams);
+        this.props.fetchLikedPosts(
+            this.props.authUser.id,
             pageIndex,
             this.state.pagination.itemsPerPage,
             this.state.postParams,
@@ -249,7 +246,7 @@ class Posts extends Component {
             <div>
                 <div className="container mt-4">
                     <div className="text-left mb-4">
-                        <h2><i className="fas fa-search"></i> Search Study Resources</h2>
+                        <h2><i className="far fa-thumbs-up"></i> Posts I Liked</h2>
                     </div>
                     <form className="row" noValidate>   
                        
@@ -277,22 +274,22 @@ class Posts extends Component {
                      
                   
                         
-                        <div className="col-sm-12 col-lg mb-2" >
+                        {/* <div className="col-sm-12 col-lg mb-2" >
                     
-                        <div className="input-group ">
-                            <input className="form-control"  type="text" placeholder="Web Development"
-                                value={this.state.postParams.search}
-                                onChange={this.handleInputChangePostParamsForm}
-                                name="search"
-                            />
-                       
-                            <div className="input-group-append">
-                             
-                                <button type="submit" className="btn btn-primary" onClick={this.handleSubmitPostParamsForm}>Search</button>
+                            <div className="input-group ">
+                                <input className="form-control"  type="text" placeholder="Web Development"
+                                    value={this.state.postParams.search}
+                                    onChange={this.handleInputChangePostParamsForm}
+                                    name="search"
+                                />
+                        
+                                <div className="input-group-append">
+                                
+                                    <button type="submit" className="btn btn-primary" onClick={this.handleSubmitPostParamsForm}>Search</button>
+                                </div>
                             </div>
-                        </div>
 
-                        </div>
+                        </div> */}
                     
                         <div className="form-inline ml-auto mb-2">
                             <label className="mr-2">Order By</label>
@@ -319,7 +316,7 @@ class Posts extends Component {
                     <br/>
                     <div className="row mb-4">                    
                         {
-                            this.state.posts?
+                            this.state.posts && this.state.posts.length>0?
                             this.state.posts.map((post, index)=>{
                                 return(
                                     <div key={post.id} className={"col-12 p-4 border-bottom "+(index==0?"border-top ":"")+styles.divPost} onClick={()=>this.onClickPost(post.id)}>
@@ -335,6 +332,7 @@ class Posts extends Component {
                                             <div className="col mt-3 mt-md-0">
                                                 <h3 className="">{post.title}</h3>
                                                 <div className="mb-2 text-secondary">
+                                                    <span className="mr-2">Liked: {(new Date(post.updated)).toLocaleDateString("en-US", { year: 'numeric', month: 'long', day: 'numeric'})},</span>
                                                     <span>Updated: {(new Date(post.updated)).toLocaleDateString("en-US", { year: 'numeric', month: 'long', day: 'numeric'})}</span>
                                                 </div>
                                                 <div className="mb-2">
@@ -344,6 +342,7 @@ class Posts extends Component {
                                                     <strong className="font-weight-bold">Tags: </strong> {post.tags.split("|").join(", ")}
                                                 </div>
                                               
+                                               
                                                 <div className="mb-5">{post.description}</div>
                                                 <div className={"row text-left"} >
                                                     <div className="col">
@@ -392,6 +391,11 @@ class Posts extends Component {
                                     // </div>
                                 );
                             })
+                            :
+                            this.state.posts && this.state.posts.length==0?
+                            <h3 className="mx-auto text-secondary">
+                                You didn't like any post.
+                            </h3>
                             :null
                         }                 
                         
@@ -441,4 +445,4 @@ class Posts extends Component {
     }
 }
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Posts));
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(LikedPosts));

@@ -978,7 +978,7 @@ export const createPost = (title, description, category, tags, links, images, ma
     })
 };
 
-export const updatePost = (title, description, category, tags, links, deletedImages, addedImages, mainImage, onSuccess, onError) => (dispatch) => {
+export const updatePost = (postId, title, description, category, tags, links, deletedImages, addedImages, mainImage, onSuccess, onError) => (dispatch) => {
     let formData = new FormData();
     formData.append('title', title);
     formData.append('description', description);
@@ -992,8 +992,8 @@ export const updatePost = (title, description, category, tags, links, deletedIma
     formData.append('mainImage', mainImage);
     // formData.append(`images`, images);
 
-    return fetch(baseUrl + `posts`, {
-        method: 'POST',
+    return fetch(baseUrl + `posts/${postId}`, {
+        method: 'PUT',
         // headers: {
         //     'Content-Type': 'application/json'
         // },
@@ -1249,3 +1249,138 @@ export const addAuthUser = (user) => ({
 
 //     localStorage.setItem('user', JSON.stringify(getState().auth.user));
 // }
+
+export const fetchLikedPosts = (
+    userId,
+    pageNumber, pageSize, postParams, 
+    onSuccess, onError) => (dispatch, getState) => {
+    console.log('fetchLikedPosts');
+
+    let params = {};
+
+    params['liked'] = true;
+
+    if(pageNumber!=null) params['pageNumber']=pageNumber;
+
+    if(pageSize!=null) params['pageSize']=pageSize;
+
+    if(postParams!=null){
+        if(postParams.category != null) params['category']=postParams.category;
+        if(postParams.orderBy != null) params['orderBy']=postParams.orderBy;
+    }
+
+    let query = Object.keys(params)
+        .map(k => k + '=' + params[k])
+        .join('&');
+
+    return fetch(baseUrl + `posts/liked/${userId}?` + query)
+    .then(response => {
+
+        if(response.ok){
+            response.json()
+            .then(posts => {
+                // dispatch(addPosts(posts));
+
+                let paginationHeader = response.headers.get('Pagination');
+                let pagination = null;
+                if(paginationHeader){
+                    pagination = JSON.parse(paginationHeader);
+                }
+
+                if(onSuccess){
+                    onSuccess(posts, pagination);
+                }
+            })
+            .catch(error=>{
+                // dispatch(postsFailed(error.message));
+                if(onError){
+                    onError(error);
+                }
+            });
+
+        } else {
+            handleFetchResponseNotOkError(response,
+            error=>{
+                // dispatch(postsFailed(error.message));
+                if(onError){
+                    onError(error);
+                }
+            });
+        }
+    },
+    error => {
+        throw error;
+    })
+    .catch(error => {
+        // dispatch(postsFailed(error.message));
+        if(onError){
+            onError(error);
+        }
+    });
+}
+
+export const fetchUserPosts = (userId, pageNumber, pageSize, postParams, 
+    onSuccess, onError) => (dispatch, getState) => {
+
+    let params = {};
+
+    params['userPosts'] = true;
+
+    if(pageNumber!=null) params['pageNumber']=pageNumber;
+
+    if(pageSize!=null) params['pageSize']=pageSize;
+
+    if(postParams!=null){
+        if(postParams.category != null) params['category']=postParams.category;
+        if(postParams.orderBy != null) params['orderBy']=postParams.orderBy;
+    }
+
+    let query = Object.keys(params)
+        .map(k => k + '=' + params[k])
+        .join('&');
+
+    return fetch(baseUrl + `posts/userPosts/${userId}?` + query)
+    .then(response => {
+
+        if(response.ok){
+            response.json()
+            .then(posts => {
+                // dispatch(addPosts(posts));
+
+                let paginationHeader = response.headers.get('Pagination');
+                let pagination = null;
+                if(paginationHeader){
+                    pagination = JSON.parse(paginationHeader);
+                }
+
+                if(onSuccess){
+                    onSuccess(posts, pagination);
+                }
+            })
+            .catch(error=>{
+                // dispatch(postsFailed(error.message));
+                if(onError){
+                    onError(error);
+                }
+            });
+
+        } else {
+            handleFetchResponseNotOkError(response,
+            error=>{
+                // dispatch(postsFailed(error.message));
+                if(onError){
+                    onError(error);
+                }
+            });
+        }
+    },
+    error => {
+        throw error;
+    })
+    .catch(error => {
+        // dispatch(postsFailed(error.message));
+        if(onError){
+            onError(error);
+        }
+    });
+}

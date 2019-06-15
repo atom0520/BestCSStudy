@@ -53,6 +53,11 @@ namespace BestCSStudy.API.Data
 
             return postImage;
         }
+        public async Task<PostImage> GetPostMainImage(int postId)
+        {
+            return await _context.PostImages.Where(p => p.PostId==postId)
+            .FirstOrDefaultAsync(p=>p.IsMain);
+        }
         public async Task<User> GetUser(int id)
         {
             var user = await _context.Users.Include(p => p.Photos).Include(p => p.Posts).FirstOrDefaultAsync(u => u.Id == id);
@@ -144,6 +149,16 @@ namespace BestCSStudy.API.Data
                 posts = posts.Where(p=>postsRelevance[p.Id]>0);
             }
 
+            if(postParams.Liked == true){
+                posts = posts.Where(p=>p.Likers.Any(liker=>liker.LikerId == postParams.UserId));
+            }
+            else if(postParams.Disliked == true){
+                posts = posts.Where(p=>p.Dislikers.Any(disliker=>disliker.DislikerId == postParams.UserId));
+            }
+
+            if(postParams.UserPosts == true){
+                posts = posts.Where(p=>p.Author.Id == postParams.UserId);
+            }
             // if (userParams.Likers)
             // {
             //     var userLikers = await GetUserLikes(userParams.UserId, true);
@@ -171,6 +186,9 @@ namespace BestCSStudy.API.Data
                     case "likes":
                         posts = posts.OrderByDescending(u => u.Likers.Count);
                         break;
+                    case "likedTime":
+                        posts = posts.OrderByDescending(u => u.Likers.FirstOrDefault(l=>l.LikerId==postParams.UserId).Created);
+                        break;
                     case "dislikes":
                         posts = posts.OrderByDescending(u => u.Dislikers.Count);
                         break;
@@ -182,7 +200,6 @@ namespace BestCSStudy.API.Data
 
             return await PagedList<Post>.CreateAsync(posts, postParams.PageNumber, postParams.PageSize);
         }
-
         private async Task<IEnumerable<int>> GetUserLikes(int id, bool likers)
         {
             var user = await _context.Users
@@ -199,7 +216,6 @@ namespace BestCSStudy.API.Data
             //     return user.Likees.Select(i => i.LikeeId);
             // }
         }
-
         public async Task<bool> SaveAll()
         {
             return await _context.SaveChangesAsync() > 0;

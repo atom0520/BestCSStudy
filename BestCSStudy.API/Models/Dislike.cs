@@ -1,3 +1,5 @@
+using System;
+
 namespace BestCSStudy.API.Models
 {
     public class Dislike
@@ -6,5 +8,6 @@ namespace BestCSStudy.API.Models
         public User Disliker { get; set; }
         public int PostId { get; set; }        
         public Post Post { get; set; }
+        public DateTime Created { get; set; }
     }
 }

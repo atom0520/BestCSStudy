@@ -10,7 +10,7 @@ namespace BestCSStudy.API.Dtos
         public string Category { get; set; }
         public string Tags { get; set; }
         public string Links { get; set; }
-        public string DeletedImagess { get; set; }
+        public string DeletedImages { get; set; }
         public IFormFile AddedImage1 { get; set; }
         public IFormFile AddedImage2 { get; set; }
         public IFormFile AddedImage3 { get; set; }

@@ -13,6 +13,8 @@ import CreatePost from './CreatePostComponent';
 import PostDetails from './PostDetailsComponent';
 import Posts from './PostsComponent';
 import EditPost from './EditPostComponent';
+import LikedPosts from './LikedPostsComponent';
+import UserPosts from './UserPostsComponent';
 import { Switch, Route, Redirect, withRouter } from 'react-router-dom';
 // import { Modal } from 'react-bootstrap';
 // import Register from './RegisterComponent';
@@ -21,6 +23,7 @@ import { Switch, Route, Redirect, withRouter } from 'react-router-dom';
 const mapStateToProps = state => {
     return {
         isAuthenticated: state.auth.isAuthenticated
+        // authUserId: state.auth.decodedToken.nameid
     }
 }
 
@@ -140,7 +143,9 @@ class Main extends Component {
                     <Route exact path="/search" render={(props) => <Posts/>} />
                     <AuthGuardedRoute exact path="/posts/:id" render={(props) => <PostDetails />} />
                     <AuthGuardedRoute path="/posts/:id/edit" render={(props) => <EditPost />} />
-                    <AuthGuardedRoute exact path="/members" render={(props) => <MemberList/>} />
+                    <AuthGuardedRoute path="/likedPosts" render={(props) => <LikedPosts/>} />
+                    <AuthGuardedRoute path="/userPosts/:id" render={(props) => <UserPosts/>} />
+                    {/* <AuthGuardedRoute exact path="/members" render={(props) => <MemberList/>} /> */}
                     <AuthGuardedRoute path="/members/:id" render={(props) => <MemberDetails />} />
                     <AuthGuardedRoute path="/member/edit" render={(props) => <MemberEdit/>} />
                     <AuthGuardedRoute path="/messages" render={(props) => <Messages/>} />            

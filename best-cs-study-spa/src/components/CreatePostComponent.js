@@ -12,6 +12,7 @@ import Dropzone, {useDropzone} from 'react-dropzone';
 import { required, minLength, maxLength } from '../shared/validators';
 import styles from './CreatePostComponent.module.scss';
 import PostForm from "./PostFormComponent";
+import { withRouter } from 'react-router-dom';
 
 function states () {
     return [
@@ -66,8 +67,10 @@ class CreatePost extends Component {
             encodedLinks,
             images,
             mainImage,
-            (user)=>{
+            (post)=>{
+                console.log(post);
                 alertifyService.success("Created post successfully!");
+                this.props.history.push(`/posts/${post.id}`);
             },
             (error)=>{
                 alertifyService.error(error.message);
@@ -100,4 +103,4 @@ class CreatePost extends Component {
     }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(CreatePost);
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(CreatePost));

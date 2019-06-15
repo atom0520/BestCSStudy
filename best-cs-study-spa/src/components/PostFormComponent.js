@@ -35,6 +35,7 @@ const maxTitleLength = 100;
 const minDescriptionLength = 20;
 const maxDescriptionLength = 800;
 const maxTagNumber = 5;
+const maxImageNumber = 5;
 
 class PostForm extends Component {
     constructor(props) {
@@ -464,6 +465,10 @@ class PostForm extends Component {
             form.valid = false;
             form.fields.images.error = 'Please upload at least one image.';
         }
+        else if(form.fields.images.value.length>maxImageNumber){
+            form.valid = false;
+            form.fields.images.error = `At most ${maxImageNumber} images can be added.`;
+        }
        
         return form;
     }
@@ -694,7 +699,7 @@ class PostForm extends Component {
                                                         <button type="button" className={"mr-1 btn btn-sm "+(index==this.state.form.mainImage?"btn-success active":"btn-secondary")} 
                                                             onClick={(e)=>{this.setMainImage(index)}}
                                                             disabled={index==this.state.form.mainImage}
-                                                        >Main</button>
+                                                        >Cover</button>
                                                         <button type="button" className="btn btn-sm btn-danger"
                                                             onClick={(e)=>{this.handleRemoveImage(index)}}
                                                         >

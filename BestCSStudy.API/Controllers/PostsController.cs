@@ -66,6 +66,57 @@ namespace BestCSStudy.API.Controllers
             return Ok(postsToReturn);
         }
 
+        [HttpGet("liked/{userId}")]
+        public async Task<IActionResult> GetUserLikedPosts(int userId, [FromQuery]PostParams postParams)
+        {
+            if(userId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
+                return Unauthorized();
+
+            postParams.UserId = userId;
+
+            // if(string.IsNullOrEmpty(userParams.Gender)){
+            //     userParams.Gender = userFromRepo.Gender == "male"? "female" : "male";
+            // }
+
+            var posts = await _repo.GetPosts(postParams);
+
+            // var postsToReturn = _mapper.Map<PagedList<Post>, List<LikedPostDto>>(posts);
+            var postsToReturn = _mapper.Map<PagedList<Post>, List<LikedPostDto>>(posts,  
+                opt => opt.AfterMap((src, dest) =>
+                {
+                    for(int i=0; i<dest.Count(); i++){
+                        var newPost = dest[i];
+                        var oldPost = src[i];
+                        newPost.LikedTime = oldPost.Likers.FirstOrDefault(l=>l.LikerId==userId).Created;
+                    }
+                })
+            );
+
+            Response.AddPagination(posts.CurrentPage, posts.PageSize, 
+                posts.TotalCount, posts.TotalPages);
+
+            return Ok(postsToReturn);
+        }
+
+        [HttpGet("userPosts/{userId}")]
+        public async Task<IActionResult> GetUserPosts(int userId, [FromQuery]PostParams postParams)
+        {
+            var userRequesting = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            // if(userId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
+            //     return Unauthorized();
+
+            postParams.UserId = userId;
+
+            var posts = await _repo.GetPosts(postParams);
+
+            var postsToReturn = _mapper.Map<IEnumerable<PostForListDto>>(posts);
+
+            Response.AddPagination(posts.CurrentPage, posts.PageSize, 
+                posts.TotalCount, posts.TotalPages);
+
+            return Ok(postsToReturn);
+        }
+
         [HttpGet("{id}", Name="GetPost")]
         public async Task<IActionResult> GetPost(int id)
         {
@@ -181,6 +232,11 @@ namespace BestCSStudy.API.Controllers
         {
             var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
             
+            var user = await _repo.GetUser(userId);
+
+            if (!user.Posts.Any(p => p.Id == id))
+                return Unauthorized();
+
             var postFromRepo = await _repo.GetPost(id);
             // var postToCreate = new Post();
 
@@ -191,7 +247,42 @@ namespace BestCSStudy.API.Controllers
             postFromRepo.Links = postForUpdateDto.Links;
             postFromRepo.Updated = postForUpdateDto.Updated;
 
-            await _repo.SaveAll();
+            var postOldMainImage = await _repo.GetPostMainImage(id);
+            if(postOldMainImage!= null && postOldMainImage.Id != -postForUpdateDto.MainImage){
+                postOldMainImage.IsMain = false;
+
+                if(postForUpdateDto.MainImage<0){
+                    var postImageFromRepo = await _repo.GetPostImage(-postForUpdateDto.MainImage);
+                    postImageFromRepo.IsMain = true;
+                }
+            }
+
+            if(postForUpdateDto.DeletedImages!=null){
+                var deletedImageIds = postForUpdateDto.DeletedImages.Split(",");
+
+                for(int i=0; i<deletedImageIds.Length; i++){
+                    int postImageId = Int32.Parse(deletedImageIds[i]);
+
+                    if (!postFromRepo.PostImages.Any(p => p.Id == postImageId))
+                        return BadRequest("Failed to update post.");
+
+                    var postImageFromRepo = await _repo.GetPostImage(postImageId);
+
+                    if (postImageFromRepo.PublicId != null)
+                    {
+                        var deleteParams = new DeletionParams(postImageFromRepo.PublicId);
+
+                        var result = _cloudinary.Destroy(deleteParams);
+
+                        if (result.Result == "ok") {
+                            _repo.Delete(postImageFromRepo);
+                        }
+                    }
+                    else{
+                        _repo.Delete(postImageFromRepo);
+                    }
+                }
+            }
 
             var files = new IFormFile[]{
                 postForUpdateDto.AddedImage1, 
@@ -227,7 +318,7 @@ namespace BestCSStudy.API.Controllers
                 postFromRepo.PostImages.Add(postImage);
             }
 
-           
+            // await _repo.SaveAll();
             // if(userId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
             //     return Unauthorized();
             

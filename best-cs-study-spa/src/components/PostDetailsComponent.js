@@ -42,6 +42,7 @@ class PostDetails extends Component {
 
         this.onClickLikeButton = this.onClickLikeButton.bind(this);
         this.onClickDislikeButton = this.onClickDislikeButton.bind(this);
+        this.onClickEditButton = this.onClickEditButton.bind(this);
     }
 
     componentDidMount(){
@@ -167,6 +168,10 @@ class PostDetails extends Component {
         }
     }
 
+    onClickEditButton(event){
+        this.props.history.push(`/posts/${this.props.match.params.id}/edit`);
+    }
+
     render() {
         // const postImages = [{
         //         original: "http://res.cloudinary.com/atom0520/image/upload/v1559884265/glewuxjd8rwve3ymc5eh.png",
@@ -198,7 +203,7 @@ class PostDetails extends Component {
                     </h1>
                 </div> */}
                 <div className="row">
-                    <div className="col-sm-3">
+                    <div className="col-md-3">
                         <div className="card">
                             <div className="card-body">
                                 <div className="text-left">
@@ -274,15 +279,16 @@ class PostDetails extends Component {
                                         onClick={this.onClickDislikeButton}
                                     >
                                     <i className="far fa-thumbs-down"></i> Dislike</button>
+                              
                                 {/* </div> */}
                             </div>
                         </div>
                         
                     </div>
-                    <div className="col-sm-9">
+                    <div className="col-md-9">
                         <div className="card">
                             <div className="card-body">
-                                    
+                           
                                     <div className="row text-left">
                                         <label className="col-lg-2 col-md-3 font-weight-bold ">Title</label>
                                         <div className="col-sm">
@@ -301,7 +307,7 @@ class PostDetails extends Component {
                                         <label className="col-lg-2 col-md-3 font-weight-bold">Category</label>
                                         <div className="col-sm col-lg-4 col-md-6">
                                             <p>
-                                            {this.state.post?this.state.post.category:''}
+                                            {this.state.post?this.state.post.category.toUpperCase():''}
                                             </p>
                                         </div>
                                     </div>
@@ -355,6 +361,17 @@ class PostDetails extends Component {
                                             
                                         </div>
                                     </div>
+                                    {
+                                        this.state.post!=null && this.state.post.author.id==this.props.authUser.id?
+                                        <div className="text-right mt-4 mt-sm-0">
+                                            <button className={"btn btn-block-xs-only btn-warning"}
+                                                onClick={this.onClickEditButton}
+                                            >
+                                                <i className="fas fa-edit"></i> Edit
+                                            </button>
+                                        </div>
+                                        :null
+                                    }
                             </div>
                         </div>
                     </div>

@@ -272,7 +272,7 @@ class MemberEdit extends Component {
                 <div className="row">
                     <div className="col-md-4">
                         <h1 className="text-left">
-                            Your Profile
+                            Edit Profile
                         </h1>
                     </div>
                     <div className="col-md-8">

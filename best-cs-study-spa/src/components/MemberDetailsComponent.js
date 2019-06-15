@@ -89,14 +89,14 @@ class MemberDetails extends Component {
                                     <p>{this.state.user?(new Date(this.state.user.created)).toLocaleDateString("en-US", { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric'}):''}</p>
                                 </div>
                             </div>
-                            <div className={"card-footer "+styles.cardFooter}>
+                            {/* <div className={"card-footer "+styles.cardFooter}>
                                 <div className="btn-group d-flex">
                                     <button className="btn btn-primary w-100">
                                     <i className="far fa-thumbs-up"></i> Like
                                     </button>
                                     <button className="btn btn-success w-100" onClick={(e)=>{this.setState({tabKey:'messages'})}}>Message</button>
                                 </div>
-                            </div>
+                            </div> */}
                         </div>
                         
                     </div>
@@ -152,20 +152,13 @@ class MemberDetails extends Component {
                                         <h4>Photos will go here</h4>
                                     }
                                 </Tab>
-                                {
+                                {/* {
                                     this.state.user!=null && this.state.user.id != this.props.authUser.id?
                                     <Tab className="text-left" eventKey="messages" title="Messages">
                                         <MemberMessages recipientId={this.state.user.id}/>
-                                        {/* {
-                                            this.state.user?
-                                            <MemberMessages recipientId={this.state.user.id}/>
-                                            :
-                                            <h4>Messages will go here</h4>
-                                        } */}
-                                        
                                     </Tab>
                                     :null
-                                }
+                                } */}
                             </Tabs>
                         </div>
                     </div>

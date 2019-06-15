@@ -171,14 +171,14 @@ class Header extends Component {
                             {
                                 this.props.auth.isAuthenticated?
                                 <li className="nav-item" >
-                                    <NavLink to="/lists" className="nav-link" activeClassName="active">Liked</NavLink>
+                                    <NavLink to="/likedPosts" className="nav-link" activeClassName="active">Liked</NavLink>
                                 </li>
                                 : null
                             }
                             {
                                 this.props.auth.isAuthenticated?
                                 <li className="nav-item" >
-                                    <NavLink to="/messages" className="nav-link" activeClassName="active">My Posts</NavLink>
+                                    <NavLink to={`/userPosts/${this.props.auth.user.id}`} className="nav-link" activeClassName="active">My Posts</NavLink>
                                 </li>
                                 : null
                             }
@@ -198,15 +198,15 @@ class Header extends Component {
                                     <img className={styles.imgUser} src={this.props.auth.user.mainPhotoUrl || ImgUser} alt=""/>
                                 </span>
                                 <Dropdown.Toggle as="a" className={styles.dropdownToggle + " text-light"}>
-                                    Welcome {this.props.auth.decodedToken.unique_name.toTitleCase()}
+                                    Welcome {this.props.auth.decodedToken.unique_name}
                                 </Dropdown.Toggle>
 
                                 <Dropdown.Menu as="div" className="mt-3">
-                                    <Dropdown.Item as="div" className={styles.dropdownItem} onClick={this.handleClickEditProfileLink }>
-                                        <i className="fa fa-user"></i> Edit Profile                                 
+                                    <Dropdown.Item as="a" className={styles.dropdownItem} onClick={this.handleClickEditProfileLink }>
+                                        <i className="fas fa-user mr-1"></i> Edit Profile                                 
                                     </Dropdown.Item>
                                     <Dropdown.Item as="a" className={styles.dropdownItem} onClick={this.handleClickLogoutLink}>
-                                        <i className="fa fa-sign-out"></i> Logout
+                                        <i className="fas fa-sign-out-alt mr-1"></i> Logout
                                     </Dropdown.Item>
 
                                 </Dropdown.Menu>
