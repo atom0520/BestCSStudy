@@ -6,12 +6,13 @@ import Home from './HomeComponent';
 import Header from './HeaderComponent';
 import Lists from './ListsComponent';
 import MemberList from './member/MemberListComponent';
-import MemberDetails from './member/MemberDetailsComponent';
-import MemberEdit from './member/MemberEditComponent';
+import MemberDetails from './MemberDetailsComponent';
+import MemberEdit from './MemberEditComponent';
 import Messages from './MessagesComponent';
 import CreatePost from './CreatePostComponent';
 import PostDetails from './PostDetailsComponent';
 import Posts from './PostsComponent';
+import EditPost from './EditPostComponent';
 import { Switch, Route, Redirect, withRouter } from 'react-router-dom';
 // import { Modal } from 'react-bootstrap';
 // import Register from './RegisterComponent';
@@ -136,8 +137,9 @@ class Main extends Component {
                             signupUser={this.props.signupUser} />}
                     />
 
-                    <Route exact path="/posts" render={(props) => <Posts/>} />
-                    <AuthGuardedRoute path="/posts/:id" render={(props) => <PostDetails />} />
+                    <Route exact path="/search" render={(props) => <Posts/>} />
+                    <AuthGuardedRoute exact path="/posts/:id" render={(props) => <PostDetails />} />
+                    <AuthGuardedRoute path="/posts/:id/edit" render={(props) => <EditPost />} />
                     <AuthGuardedRoute exact path="/members" render={(props) => <MemberList/>} />
                     <AuthGuardedRoute path="/members/:id" render={(props) => <MemberDetails />} />
                     <AuthGuardedRoute path="/member/edit" render={(props) => <MemberEdit/>} />

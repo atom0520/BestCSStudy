@@ -1,8 +1,8 @@
-.image-gallery-thumbnail {
+.post-details-component .image-gallery-thumbnail {
     width: 33% !important;
 }
 
-.image-gallery-left-nav, .image-gallery-right-nav {
+.post-details-component .image-gallery-left-nav,.post-details-component .image-gallery-right-nav {
     font-size: 2rem !important;
     padding: 15px 15px !important;
 }

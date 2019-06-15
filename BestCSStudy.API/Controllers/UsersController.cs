@@ -27,28 +27,28 @@ namespace BestCSStudy.API.Controllers
 
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetUsers([FromQuery]UserParams userParams)
-        {
-            var currentUserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+        // [HttpGet]
+        // public async Task<IActionResult> GetUsers([FromQuery]UserParams userParams)
+        // {
+        //     var currentUserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
 
-            var userFromRepo = await _repo.GetUser(currentUserId);
+        //     var userFromRepo = await _repo.GetUser(currentUserId);
 
-            userParams.UserId = currentUserId;
+        //     userParams.UserId = currentUserId;
 
-            // if(string.IsNullOrEmpty(userParams.Gender)){
-            //     userParams.Gender = userFromRepo.Gender == "male"? "female" : "male";
-            // }
+        //     // if(string.IsNullOrEmpty(userParams.Gender)){
+        //     //     userParams.Gender = userFromRepo.Gender == "male"? "female" : "male";
+        //     // }
 
-            var users = await _repo.GetUsers(userParams);
+        //     var users = await _repo.GetUsers(userParams);
 
-            var usersToReturn = _mapper.Map<IEnumerable<UserForListDto>>(users);
+        //     var usersToReturn = _mapper.Map<IEnumerable<UserForListDto>>(users);
 
-            Response.AddPagination(users.CurrentPage, users.PageSize, 
-                users.TotalCount, users.TotalPages);
+        //     Response.AddPagination(users.CurrentPage, users.PageSize, 
+        //         users.TotalCount, users.TotalPages);
 
-            return Ok(usersToReturn);
-        }
+        //     return Ok(usersToReturn);
+        // }
 
         [HttpGet("{id}", Name="GetUser")]
         public async Task<IActionResult> GetUser(int id)
@@ -56,6 +56,16 @@ namespace BestCSStudy.API.Controllers
             var user = await _repo.GetUser(id);
 
             var userToReturn = _mapper.Map<UserForDetailsDto>(user);
+
+            return Ok(userToReturn);
+        }
+
+        [HttpGet("auth/{id}")]
+        public async Task<IActionResult> GetAuthUser(int id)
+        {
+            var user = await _repo.GetUser(id);
+
+            var userToReturn = _mapper.Map<UserForAuthDto>(user);
 
             return Ok(userToReturn);
         }

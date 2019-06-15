@@ -1,6 +1,6 @@
 import React, { Component, useMemo, useCallback } from 'react'
 import Dropzone, {useDropzone} from 'react-dropzone';
-import { Loading } from '../LoadingComponent';
+import { Loading } from './LoadingComponent';
 
 const dropzoneStyle = {
     flex: 1,
@@ -70,8 +70,8 @@ function PhotoUploader(props) {
     ));
   
     return (
-      <div className="row mt-3">
-        <div className="col-md-4 mt-2">
+      <div className="row mt-1">
+        <div className="col-lg-4 mt-3">
           <h4>Add Photos</h4>
           <div {...getRootProps({style})}>
             <input {...getInputProps()} />
@@ -81,7 +81,7 @@ function PhotoUploader(props) {
         </div>
         {
           props.files.length>0?
-          <div className="col-md-8 mt-2">
+          <div className="col-lg-8 mt-3">
             <h4>Files to Upload</h4>
             {
               props.isUploadingPhoto?<Loading text="Uploading. . ."/>:null

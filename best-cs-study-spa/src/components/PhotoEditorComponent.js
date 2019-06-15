@@ -2,9 +2,9 @@ import React, { Component, useMemo, useCallback } from 'react'
 import styles from './PhotoEditorComponent.module.scss';
 import Dropzone, {useDropzone} from 'react-dropzone';
 import { connect } from 'react-redux';
-import { uploadUserPhoto, setUserMainPhoto, deleteUserPhoto, setUserMainPhotoUrl } from '../../redux/ActionCreators';
-import { alertifyService } from '../../services/AlertifyService';
-import { Loading } from '../LoadingComponent';
+import { uploadUserPhoto, setUserMainPhoto, deleteUserPhoto, setUserMainPhotoUrl } from '../redux/ActionCreators';
+import { alertifyService } from '../services/AlertifyService';
+import { Loading } from './LoadingComponent';
 import PhotoUploader from './PhotoUploaderComponent';
 
 // const dropzoneStyle = {
@@ -201,12 +201,12 @@ class PhotoEditor extends Component {
     }
     
     render() {
-        console.log(this.props.photos);
         return(
             <div className="container">
-                <div className="row">
+              {
+                  this.props.photos && this.props.photos.length>0?
+                  <div className="row mt-3">
                     {
-                        this.props.photos?
                         this.props.photos.map(photo=>{
                             return(
                                 <div key={photo.id} className="col-sm-6 col-md-4 col-lg-3 my-1 text-center">
@@ -219,15 +219,16 @@ class PhotoEditor extends Component {
                                         <button type="button" className="btn btn-sm btn-danger"
                                           onClick={(e)=>{this.handleDeletePhoto(photo.id)}}
                                         >
-                                            <i className="fa fa-trash-o"></i>
+                                            <i className="fas fa-trash-alt"></i>
                                         </button>
                                     </div> 
                                 </div>
                             );
                         })
-                        :null
                     }
-                </div>
+                  </div>
+                  :null
+                }
                 <PhotoUploader 
                   files = {this.state.files}
                   handleDroppedFiles = {this.handleDroppedFiles}

@@ -80,6 +80,10 @@ export const Auth = (state = initAuthState(), action) => {
             return {...state,
                 user: {...state.user, photoUrl: action.url}
             };
+        case ActionTypes.ADD_AUTH_USER:
+            return {...state,
+                user: action.user
+            };
         // case ActionTypes.SIGNUP_REQUEST:
         //     return {...state,
         //         isLoadingSignup: true

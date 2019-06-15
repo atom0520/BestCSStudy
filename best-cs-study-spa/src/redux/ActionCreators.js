@@ -323,19 +323,101 @@ export const fetchUsers = (pageNumber, pageSize, userParams,
     });
 }
 
+export const fetchPosts = (pageNumber, pageSize, postParams, 
+    onSuccess, onError) => (dispatch, getState) => {
+    console.log('fetchPosts');
+
+    // dispatch(postsLoading());
+
+    let params = {};
+
+    if(pageNumber!=null) params['pageNumber']=pageNumber;
+
+    if(pageSize!=null) params['pageSize']=pageSize;
+
+    if(postParams!=null){
+        if(postParams.category != null) params['category']=postParams.category;
+        if(postParams.search != null) params['search']=postParams.search;
+        if(postParams.orderBy != null) params['orderBy']=postParams.orderBy;
+    }
+
+    let query = Object.keys(params)
+        .map(k => k + '=' + params[k])
+        .join('&');
+
+    return fetch(baseUrl + 'posts?' + query)
+    .then(response => {
+
+        if(response.ok){
+            response.json()
+            .then(posts => {
+                // dispatch(addPosts(posts));
+
+                let paginationHeader = response.headers.get('Pagination');
+                let pagination = null;
+                if(paginationHeader){
+                    pagination = JSON.parse(paginationHeader);
+                }
+
+                if(onSuccess){
+                    onSuccess(posts, pagination);
+                }
+            })
+            .catch(error=>{
+                // dispatch(postsFailed(error.message));
+                if(onError){
+                    onError(error);
+                }
+            });
+
+        } else {
+            handleFetchResponseNotOkError(response,
+            error=>{
+                // dispatch(postsFailed(error.message));
+                if(onError){
+                    onError(error);
+                }
+            });
+        }
+    },
+    error => {
+        throw error;
+    })
+    .catch(error => {
+        // dispatch(postsFailed(error.message));
+        if(onError){
+            onError(error);
+        }
+    });
+}
+
 export const usersLoading = () => ({
     type: ActionTypes.USERS_LOADING
 });
+
+// export const postsLoading = () => ({
+//     type: ActionTypes.POSTS_LOADING
+// });
 
 export const usersFailed = (errmess) => ({
     type: ActionTypes.USERS_FAILED,
     payload: errmess
 });
 
+// export const postsFailed = (errmess) => ({
+//     type: ActionTypes.POSTS_FAILED,
+//     payload: errmess
+// });
+
 export const addUsers = (users) => ({
     type: ActionTypes.ADD_USERS,
     payload: users
 });
+
+// export const addPosts = (posts) => ({
+//     type: ActionTypes.ADD_POSTS,
+//     payload: posts
+// });
 
 export const fetchUser = (id, onSuccess, onError) => (dispatch, getState) => {
 
@@ -844,6 +926,7 @@ export const uploadPostImage = (file, onSuccess, onError) => (dispatch) => {
 };
 
 export const createPost = (title, description, category, tags, links, images, mainImage, onSuccess, onError) => (dispatch) => {
+    console.log(mainImage);
     let formData = new FormData();
     formData.append('title', title);
     formData.append('description', description);
@@ -852,6 +935,59 @@ export const createPost = (title, description, category, tags, links, images, ma
     formData.append('links', links);
     for(let i=0; i<images.length; i++){
         formData.append(`image${i+1}`, images[i]);
+    }
+    formData.append('mainImage', mainImage);
+    // formData.append(`images`, images);
+
+    return fetch(baseUrl + `posts`, {
+        method: 'POST',
+        // headers: {
+        //     'Content-Type': 'application/json'
+        // },
+        body: formData
+    })
+    .then(response=>{
+            if(response.ok){
+                response.json()
+                .then(responseBodyJson=>{
+                    if(onSuccess){
+                        onSuccess(responseBodyJson);
+                    }
+                })
+                .catch(error=>{
+                    if(onError){
+                        onError(error);
+                    }
+                });
+            } else {     
+                handleFetchResponseNotOkError(response,
+                error=>{
+                    if(onError){
+                        onError(error);
+                    }
+                });
+            }
+        },
+        error=>{
+            throw error;
+        })
+    .catch(error=>{
+        if(onError){
+            onError(error);
+        }
+    })
+};
+
+export const updatePost = (title, description, category, tags, links, deletedImages, addedImages, mainImage, onSuccess, onError) => (dispatch) => {
+    let formData = new FormData();
+    formData.append('title', title);
+    formData.append('description', description);
+    formData.append('category', category);
+    formData.append('tags', tags);
+    formData.append('links', links);
+    formData.append('deletedImages', deletedImages);
+    for(let i=0; i<addedImages.length; i++){
+        formData.append(`addedImage${i+1}`, addedImages[i]);
     }
     formData.append('mainImage', mainImage);
     // formData.append(`images`, images);
@@ -1030,3 +1166,86 @@ export const cancelDislikedPost = (userId, postId, onSuccess, onError) => (dispa
         }
     })
 };
+
+export const fetchAuthUser = (id, onSuccess, onError) => (dispatch, getState) => {
+
+    return fetch(baseUrl + 'users/auth/' + id)
+    .then(response => {
+        
+        if(response.ok){
+            response.json()
+            .then(user => {
+                dispatch(addAuthUser(user));
+                localStorage.setItem('user', JSON.stringify(getState().auth.user));
+                if(onSuccess){
+                    onSuccess(user);
+                }
+            })
+            .catch(error=>{
+                
+                if(onError){
+                    onError(error);
+                }
+            });
+
+        } else {
+            handleFetchResponseNotOkError(response,
+            error=>{
+                
+                if(onError){
+                    onError(error);
+                }
+            });
+        }
+    },
+    error => {
+        throw error;
+    })
+    .catch(error => {
+        
+        if(onError){
+            onError(onError);
+        }
+    });
+}
+
+export const addAuthUser = (user) => ({
+    type: ActionTypes.ADD_AUTH_USER,
+    user
+});
+
+// export const authUserLikePost = (postId) => (dispatch, getState) =>{
+//     dispatch ({
+//         type: ActionTypes.AUTH_USER_LIKE_POST,
+//         postId,
+//     });
+
+//     localStorage.setItem('user', JSON.stringify(getState().auth.user));
+// }
+
+// export const authUserCancelLikedPost = (postId) => (dispatch, getState) =>{
+//     dispatch ({
+//         type: ActionTypes.AUTH_USER_CANCEL_LIKED_POST,
+//         postId,
+//     });
+
+//     localStorage.setItem('user', JSON.stringify(getState().auth.user));
+// }
+
+// export const authUserDislikePost = (postId) => (dispatch, getState) =>{
+//     dispatch ({
+//         type: ActionTypes.AUTH_USER_DISLIKE_POST,
+//         postId,
+//     });
+
+//     localStorage.setItem('user', JSON.stringify(getState().auth.user));
+// }
+
+// export const authUserCancelDislikedPost = (postId) => (dispatch, getState) =>{
+//     dispatch ({
+//         type: ActionTypes.AUTH_USER_CANCEL_DISLIKED_POST,
+//         postId,
+//     });
+
+//     localStorage.setItem('user', JSON.stringify(getState().auth.user));
+// }

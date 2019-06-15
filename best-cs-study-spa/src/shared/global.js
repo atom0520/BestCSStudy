@@ -73,3 +73,5 @@ export const genderOptions = [
     {value:'male', display:'Male'}, 
     {value:'female', display:'Female'}
 ];
+
+export const defaultDatetimeValue = -62135571604000;

@@ -14,6 +14,7 @@ import queryString from 'query-string';
 import './PostDetailsComponent.css';
 import ImgUser from '../shared/img/user.png';
 import styles from './PostDetailsComponent.module.scss';
+import { Link } from 'react-router-dom';
 
 const mapStateToProps = state => {
     return {
@@ -187,7 +188,7 @@ class PostDetails extends Component {
         }):null;
 
         return(
-            <div className="container mt-4">
+            <div className="container mt-4 post-details-component">
                 <h1 className="mb-4 text-left">
                     Post Details
                 </h1>
@@ -202,16 +203,21 @@ class PostDetails extends Component {
                             <div className="card-body">
                                 <div className="text-left">
                                     <strong>Author:</strong>
-                                   
                                     <p>
-                                        <span className="mr-2">
-                                            <img className={styles.imgAuthor} src={this.state.post?(this.state.post.author.photoUrl || ImgUser):''} alt=""/>
-                                        </span>
-                                        {
-                                            this.state.post?
-                                            this.state.post.author.username
-                                            :null
-                                        }
+                                    {
+                                        this.state.post?
+                                        <Link to={"/members/"+this.state.post.author.id} className="navbar-brand">
+                                            <span className="mr-2">
+                                                <img className={styles.imgAuthor} src={this.state.post?(this.state.post.author.photoUrl || ImgUser):''} alt=""/>
+                                            </span>
+                                            {
+                                                this.state.post?
+                                                this.state.post.author.username
+                                                :null
+                                            }
+                                        </Link>
+                                        :null
+                                    }
                                     </p>
                                 </div>
                                 <div className="text-left">
@@ -256,35 +262,35 @@ class PostDetails extends Component {
                                 </div>
                             </div>
                             <div className="card-footer ">
-                                <div className="btn-group d-flex">
-                                    <button className={"btn btn-success w-50 "+styles.btnLike+
-                                    (this.isPostLiked()?" active "+styles.active:"")}
+                                {/* <div className="btn-group d-flex"> */}
+                                    <button className={"btn mx-1 "+
+                                    (this.isPostLiked()?"btn-success":"btn-secondary")}
                                         onClick={this.onClickLikeButton}
                                     >
                                     <i className="far fa-thumbs-up"></i> Like
                                     </button>
-                                    <button className={"btn btn-danger w-50 "+styles.btnDislike+
-                                    (this.isPostDisliked()?" active "+styles.active:"")}
+                                    <button className={"btn mx-1 "+
+                                    (this.isPostDisliked()?"btn-danger":"btn-secondary")}
                                         onClick={this.onClickDislikeButton}
                                     >
                                     <i className="far fa-thumbs-down"></i> Dislike</button>
-                                </div>
+                                {/* </div> */}
                             </div>
                         </div>
                         
                     </div>
-                    <div className="col-sm-8">
+                    <div className="col-sm-9">
                         <div className="card">
                             <div className="card-body">
                                     
                                     <div className="row text-left">
-                                        <label className="col-sm-2 font-weight-bold ">Title</label>
+                                        <label className="col-lg-2 col-md-3 font-weight-bold ">Title</label>
                                         <div className="col-sm">
                                             <p>{this.state.post?this.state.post.title:''}</p>
                                         </div>
                                     </div>
                                     <div className="row text-left ">
-                                        <label className="col-sm-2 font-weight-bold">Description</label>
+                                        <label className="col-lg-2 col-md-3 font-weight-bold">Description</label>
                                         <div className="col-sm">
                                             <p>
                                             {this.state.post?this.state.post.description:''}
@@ -292,7 +298,7 @@ class PostDetails extends Component {
                                         </div>
                                     </div>
                                     <div className="row text-left ">
-                                        <label className="col-sm-2 font-weight-bold">Category</label>
+                                        <label className="col-lg-2 col-md-3 font-weight-bold">Category</label>
                                         <div className="col-sm col-lg-4 col-md-6">
                                             <p>
                                             {this.state.post?this.state.post.category:''}
@@ -300,7 +306,7 @@ class PostDetails extends Component {
                                         </div>
                                     </div>
                                     <div className="row text-left ">
-                                        <label className="col-sm-2 font-weight-bold">Tags</label>
+                                        <label className="col-lg-2 col-md-3 font-weight-bold">Tags</label>
                                         <div className="col-sm">
                                             {
                                                 this.state.post?
@@ -314,7 +320,7 @@ class PostDetails extends Component {
                                         </div>
                                     </div>
                                     <div className="row text-left ">
-                                        <label className="col-sm-2 font-weight-bold">Links</label>
+                                        <label className="col-lg-2 col-md-3 font-weight-bold">Links</label>
                                         <div className="col-sm-10">
                                             {
                                                 this.state.post?
@@ -339,7 +345,7 @@ class PostDetails extends Component {
                                         </div>
                                     </div>
                                     <div className="row text-left mt-4">
-                                        <label className="col-sm-2 font-weight-bold">Images</label>
+                                        <label className="col-lg-2 col-md-3 font-weight-bold">Images</label>
                                         <div className="col-sm-8 col-md-6 col-lg-4">
                                         {
                                             postImages?

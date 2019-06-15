@@ -11,6 +11,7 @@ namespace BestCSStudy.API.Data
          void Delete<T>(T entity) where T: class;
          Task<bool> SaveAll();
          Task<PagedList<User>> GetUsers(UserParams userParams);
+         Task<PagedList<Post>> GetPosts(PostParams postParams);
          Task<Post> GetPost(int id);
          Task<User> GetUser(int id);
          Task<Photo> GetPhoto(int id);

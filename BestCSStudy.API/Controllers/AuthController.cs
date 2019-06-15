@@ -83,7 +83,7 @@ namespace BestCSStudy.API.Controllers
 
             var token = tokenHandler.CreateToken(tokenDescriptor);
 
-            var user = _mapper.Map<UserForListDto>(userFromRepo);
+            var user = _mapper.Map<UserForAuthDto>(userFromRepo);
 
             Console.WriteLine(token);
             return Ok(new

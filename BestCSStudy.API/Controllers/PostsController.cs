@@ -43,23 +43,28 @@ namespace BestCSStudy.API.Controllers
 
         }
 
-        // [HttpGet]
-        // public async Task<IActionResult> GetUsers([FromQuery]UserParams userParams)
-        // {
-        //     var currentUserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+        [HttpGet]
+        public async Task<IActionResult> GetPosts([FromQuery]PostParams postParams)
+        {
+            var currentUserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
 
-        //     var userFromRepo = await _repo.GetUser(currentUserId);
+            var userFromRepo = await _repo.GetUser(currentUserId);
 
-        //     userParams.UserId = currentUserId;
-        //     var users = await _repo.GetUsers(userParams);
+            postParams.UserId = currentUserId;
 
-        //     var usersToReturn = _mapper.Map<IEnumerable<UserForListDto>>(users);
+            // if(string.IsNullOrEmpty(userParams.Gender)){
+            //     userParams.Gender = userFromRepo.Gender == "male"? "female" : "male";
+            // }
 
-        //     Response.AddPagination(users.CurrentPage, users.PageSize, 
-        //         users.TotalCount, users.TotalPages);
+            var posts = await _repo.GetPosts(postParams);
 
-        //     return Ok(usersToReturn);
-        // }
+            var postsToReturn = _mapper.Map<IEnumerable<PostForListDto>>(posts);
+
+            Response.AddPagination(posts.CurrentPage, posts.PageSize, 
+                posts.TotalCount, posts.TotalPages);
+
+            return Ok(postsToReturn);
+        }
 
         [HttpGet("{id}", Name="GetPost")]
         public async Task<IActionResult> GetPost(int id)
@@ -71,7 +76,7 @@ namespace BestCSStudy.API.Controllers
             return Ok(postToReturn);
         }
 
-         [HttpPost]
+        [HttpPost]
         public async Task<IActionResult> CreatePost([FromForm]PostForCreationDto postForCreationDto)
         {
             var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
@@ -171,48 +176,99 @@ namespace BestCSStudy.API.Controllers
             return BadRequest("Failed to create post.");
         }
 
-        // [HttpPut("{id}")]
-        // public async Task<IActionResult> UpdateUser(int id, UserForUpdateDto userForUpdateDto)
-        // {
-        //     if (id != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
-        //         return Unauthorized();
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdatePost(int id, [FromForm]PostForUpdateDto postForUpdateDto)
+        {
+            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
             
-        //     var userFromRepo = await _repo.GetUser(id);
+            var postFromRepo = await _repo.GetPost(id);
+            // var postToCreate = new Post();
 
-        //     _mapper.Map(userForUpdateDto, userFromRepo);
+            postFromRepo.Title = postForUpdateDto.Title;
+            postFromRepo.Description = postForUpdateDto.Description;
+            postFromRepo.Category = postForUpdateDto.Category;
+            postFromRepo.Tags = postForUpdateDto.Tags;
+            postFromRepo.Links = postForUpdateDto.Links;
+            postFromRepo.Updated = postForUpdateDto.Updated;
 
-        //     if (await _repo.SaveAll())
-        //         return NoContent();
+            await _repo.SaveAll();
+
+            var files = new IFormFile[]{
+                postForUpdateDto.AddedImage1, 
+                postForUpdateDto.AddedImage2, 
+                postForUpdateDto.AddedImage3, 
+                postForUpdateDto.AddedImage4
+                };
             
-        //     throw new Exception($"Updating user {id} failed on save");
-        // }
+            for(int i=0; i<files.Length; i++){
+                var file = files[i];
+                if(file==null || file.Length <= 0) continue;
+                var uploadResult = new ImageUploadResult();
+     
+                using (var stream = file.OpenReadStream())
+                {
+                    var uploadParams = new ImageUploadParams()
+                    {
+                        File = new FileDescription(file.Name, stream),
+                        Transformation = new Transformation().Width(500).Height(500).Crop("fill").Gravity("face")
+                    };
 
-        // [HttpPost("{id}/like/{recipientId}")]
-        // public async Task<IActionResult> LikePost(int userId, int postId)
-        // {
-        //     if (userId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
-        //         return Unauthorized();
-            
-        //     var like = await _repo.GetLike(userId, postId);
+                    uploadResult = _cloudinary.Upload(uploadParams);
+                }
+        
+                var postImage = new PostImage();
+                postImage.DateAdded = DateTime.Now;
+                postImage.Url = uploadResult.Uri.ToString();
+                postImage.PublicId = uploadResult.PublicId;
 
-        //     if (like != null)
-        //         return BadRequest("You already like this user");
-            
-        //     if (await _repo.GetPost(postId)==null)
-        //         return NotFound();
-            
-        //     like = new Like
-        //     {
-        //         LikerId = userId,
-        //         PostId = postId
-        //     };
+                // _repo.Add<PostImage>(postImageToCreate);
+                if (i==postForUpdateDto.MainImage)
+                    postImage.IsMain = true;
+                postFromRepo.PostImages.Add(postImage);
+            }
 
-        //     _repo.Add<Like>(like);
-
-        //     if (await _repo.SaveAll())
-        //         return Ok();
+           
+            // if(userId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
+            //     return Unauthorized();
             
-        //     return BadRequest("Failed to like user");
-        // }
+            // var userFromRepo = await _repo.GetUser(userId);
+
+            // var file = postForCreationDto.Image1;
+
+            // var uploadResult = new ImageUploadResult();
+
+            // if(file.Length > 0){
+            //     using (var stream = file.OpenReadStream())
+            //     {
+            //         var uploadParams = new ImageUploadParams()
+            //         {
+            //             File = new FileDescription(file.Name, stream),
+            //             Transformation = new Transformation().Width(500).Height(500).Crop("fill").Gravity("face")
+            //         };
+
+            //         uploadResult = _cloudinary.Upload(uploadParams);
+            //     }
+            // }
+
+            // postForCreationDto.Url = uploadResult.Uri.ToString();
+            // postForCreationDto.PublicId = uploadResult.PublicId;
+
+            // var postImage = _mapper.Map<PostImage>(postImageForCreationDto);
+
+            // if (!userFromRepo.Photos.Any(u=>u.IsMain))
+            //     photo.IsMain = true;
+            // postImage.PostId = 0;
+            
+            // userFromRepo.Photos.Add(photo);
+            // _repo.Add<PostImage>(postImage);
+
+            if (await _repo.SaveAll()){
+
+                var postToReturn = _mapper.Map<PostForDetailsDto>(postFromRepo);
+                return CreatedAtRoute("GetPost", new {controller="Posts", id=postFromRepo.Id}, postToReturn);
+            }
+         
+            return BadRequest("Failed to create post.");
+        }
     }
 }

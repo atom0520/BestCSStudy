@@ -4,7 +4,7 @@ import styles from './HeaderComponent.module.scss';
 import { NavLink, Link } from 'react-router-dom';
 import { alertifyService } from '../services/AlertifyService';
 import { connect } from 'react-redux';
-import { loginUser, logoutUser } from '../redux/ActionCreators';
+import { loginUser, logoutUser, fetchAuthUser } from '../redux/ActionCreators';
 import { withRouter } from 'react-router-dom';
 import ImgUser from '../shared/img/user.png';
 import Register from './RegisterComponent';
@@ -18,6 +18,7 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => ({
     loginUser: (creds, onSuccess, onError) => { dispatch(loginUser(creds, onSuccess, onError)) },
+    fetchAuthUser: (id, onSuccess, onError) => { dispatch(fetchAuthUser(id, onSuccess, onError)) },
     logoutUser: (onSuccess, onError) => { dispatch(logoutUser(onSuccess, onError)) }
 });
 
@@ -50,8 +51,21 @@ class Header extends Component {
 
         this.showModal = this.showModal.bind(this);
         this.hideModal = this.hideModal.bind(this);
+
+
     }
 
+    componentDidMount(){
+        if(this.props.auth.isAuthenticated){
+            this.props.fetchAuthUser(this.props.auth.user.id,
+                (user)=>{
+                    alertifyService.message('Fetched auth user successfully!',user);
+                },
+                err=>{
+                    alertifyService.message('Failed to fetch auth user!');
+                });
+        }
+    }
     // handleInputChangeLoginForm(event){
     //     const target = event.target;
     //     const value = target.value;
@@ -152,7 +166,7 @@ class Header extends Component {
                     
                         <ul className="navbar-nav mr-auto">
                             <li className="nav-item" >                                
-                                <NavLink to="/posts" className="nav-link" activeClassName="active">Search</NavLink>
+                                <NavLink to="/search" className="nav-link" activeClassName="active">Search</NavLink>
                             </li>
                             {
                                 this.props.auth.isAuthenticated?
@@ -181,7 +195,7 @@ class Header extends Component {
                             this.props.auth.isAuthenticated?
                             <Dropdown>
                                 <span className="mr-2">
-                                    <img className={styles.imgUser} src={this.props.auth.user.photoUrl || ImgUser} alt=""/>
+                                    <img className={styles.imgUser} src={this.props.auth.user.mainPhotoUrl || ImgUser} alt=""/>
                                 </span>
                                 <Dropdown.Toggle as="a" className={styles.dropdownToggle + " text-light"}>
                                     Welcome {this.props.auth.decodedToken.unique_name.toTitleCase()}

@@ -61,7 +61,7 @@ namespace BestCSStudy.API.Data
         }
         public async Task<Post> GetPost(int id)
         {
-            var post = await _context.Posts.Include(p => p.PostImages).Include(p => p.Author).Include(p => p.Likers).Include(p => p.Dislikers).FirstOrDefaultAsync(p => p.Id == id);
+            var post = await _context.Posts.Include(p => p.PostImages).Include(p => p.Author).ThenInclude(a=>a.Photos).Include(p => p.Likers).Include(p => p.Dislikers).FirstOrDefaultAsync(p => p.Id == id);
 
             return post;
         }
@@ -114,6 +114,73 @@ namespace BestCSStudy.API.Data
             }
 
             return await PagedList<User>.CreateAsync(users, userParams.PageNumber, userParams.PageSize);
+        }
+        public async Task<PagedList<Post>> GetPosts(PostParams postParams)
+        {
+            var posts =  _context.Posts.Include(p => p.PostImages).Include(p => p.Likers).Include(p => p.Dislikers)
+                .Include(p => p.Author).ThenInclude(a=>a.Photos)
+                .OrderByDescending(u=>u.Updated).AsQueryable();
+
+            // posts = posts.Where(u=>u.Id != userParams.UserId);
+
+            if (postParams.Category != null && postParams.Category != ""){
+                posts = posts.Where(p=>p.Category == postParams.Category);
+            }
+
+            var postsRelevance = new Dictionary<int, int>();
+            if(postParams.Search != null && postParams.Search != ""){
+                foreach (var post in posts)
+                {
+                    if(!postsRelevance.ContainsKey(post.Id)){
+                        postsRelevance.Add(post.Id, 0);
+                    }
+
+                    postsRelevance[post.Id]+=Global.CountStringOccurrences(post.Title, postParams.Search);
+                    postsRelevance[post.Id]+=Global.CountStringOccurrences(post.Description, postParams.Search);
+                    postsRelevance[post.Id]+=Global.CountStringOccurrences(post.Tags, postParams.Search);
+                    
+                }
+
+                posts = posts.Where(p=>postsRelevance[p.Id]>0);
+            }
+
+            // if (userParams.Likers)
+            // {
+            //     var userLikers = await GetUserLikes(userParams.UserId, true);
+            //     users = users.Where(u => userLikers.Contains(u.Id));
+            // }
+
+            // if (userParams.Likees)
+            // {
+            //     var userLikees = await GetUserLikes(userParams.UserId, false);
+            //     users = users.Where(u => userLikees.Contains(u.Id));
+            // }
+
+            if(!string.IsNullOrEmpty(postParams.OrderBy)){
+                switch (postParams.OrderBy) {
+                    case "relevance":
+                        if(postParams.Search != null && postParams.Search != "")
+                            posts = posts.OrderByDescending(u => postsRelevance[u.Id]);
+                        break;
+                    case "created":
+                        posts = posts.OrderByDescending(u => u.Created);
+                        break;
+                    case "updated":
+                        posts = posts.OrderByDescending(u => u.Updated);
+                        break;
+                    case "likes":
+                        posts = posts.OrderByDescending(u => u.Likers.Count);
+                        break;
+                    case "dislikes":
+                        posts = posts.OrderByDescending(u => u.Dislikers.Count);
+                        break;
+                    default:
+                        posts = posts.OrderByDescending(u=>u.Updated);
+                        break;
+                }
+            }
+
+            return await PagedList<Post>.CreateAsync(posts, postParams.PageNumber, postParams.PageSize);
         }
 
         private async Task<IEnumerable<int>> GetUserLikes(int id, bool likers)
@@ -183,5 +250,6 @@ namespace BestCSStudy.API.Data
             return messages;
         }
 
+    
     }
 }
