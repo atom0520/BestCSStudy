@@ -15,6 +15,8 @@ namespace BestCSStudy.API.Data
         public DbSet<Dislike> Dislikes { get; set; }
         public DbSet<Message> Messages { get; set; }
         public DbSet<Post> Posts { get; set; }
+        public DbSet<Tag> Tags { get; set; }
+        public DbSet<PostTag> PostTags { get; set; }
         public DbSet<PostImage> PostImages { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -46,6 +48,21 @@ namespace BestCSStudy.API.Data
                 .HasOne(u => u.Disliker)
                 .WithMany(u => u.DislikedPosts)
                 .HasForeignKey(u => u.DislikerId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<PostTag>()
+                .HasKey(k => new {k.PostId, k.TagId});
+
+            builder.Entity<PostTag>()
+                .HasOne(u => u.Post)
+                .WithMany(u => u.Tags)
+                .HasForeignKey(u => u.PostId)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            builder.Entity<PostTag>()
+                .HasOne(u => u.Tag)
+                .WithMany(u => u.Posts)
+                .HasForeignKey(u => u.TagId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.Entity<Message>()

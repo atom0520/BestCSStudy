@@ -10,7 +10,7 @@ namespace BestCSStudy.API.Dtos
         public string Title { get; set; }
         public string Description { get; set; }
         public string Category { get; set; }
-        public string Tags { get; set; }
+        public ICollection<string> Tags { get; set; }
         public string Links { get; set; }
         public ICollection<PostImageForDetailsDto> PostImages { get; set; }
         public ICollection<LikeForPostDetailsDto> Likers { get; set; }

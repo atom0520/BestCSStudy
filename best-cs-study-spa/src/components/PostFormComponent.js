@@ -541,7 +541,7 @@ class PostForm extends Component {
             this.state.form.fields.title.value,
             this.state.form.fields.description.value,
             this.state.form.fields.category.value,
-            this.state.form.fields.tags.value.join('|'),
+            this.state.form.fields.tags.value.join(','),
             encodedLinkValues.join(','),
             this.state.form.fields.images.value,
             this.state.form.mainImage

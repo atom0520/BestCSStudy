@@ -6,6 +6,7 @@ import { Provider } from 'react-redux';
 import { store } from './redux/store';
 import { BrowserRouter } from "react-router-dom";
 import { unregisterFetchIntercept } from './shared/fetchIntercept';
+import Footer from './components/FooterComponent';
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
       <BrowserRouter>
         <div className="App">
           <Main/>
+          <Footer/>
         </div>
       </BrowserRouter>
     </Provider>

@@ -141,7 +141,7 @@ class Login extends Component {
             },
             ()=>{
                 alertifyService.success('Logged in successfully!');
-                this.props.history.push('/posts');
+                // this.props.history.push('/posts');
                 this.props.close();                
             },
             (error)=>{

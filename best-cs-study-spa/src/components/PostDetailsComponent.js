@@ -18,6 +18,7 @@ import { Link } from 'react-router-dom';
 
 const mapStateToProps = state => {
     return {
+        isAuthenticated: state.auth.isAuthenticated,
         authUser: state.auth.user
     }
 }
@@ -52,7 +53,7 @@ class PostDetails extends Component {
                 alertifyService.success('Fetched post '+this.props.match.params.id+' successfully!');     
                 console.log(post);
 
-                post.tags = post.tags.split('|');
+                post.tags = post.tags;
                 let links = post.links.split(',');
                 for(let i=0;i<links.length; i++){
                     links[i] = decodeURIComponent(links[i]);
@@ -77,7 +78,7 @@ class PostDetails extends Component {
                 alertifyService.success('Fetched post '+this.props.match.params.id+' successfully!');     
                 console.log(post);
 
-                post.tags = post.tags.split('|');
+                post.tags = post.tags;
                 let links = post.links.split(',');
                 for(let i=0;i<links.length; i++){
                     links[i] = decodeURIComponent(links[i]);
@@ -191,7 +192,8 @@ class PostDetails extends Component {
                 thumbnail: postImage.url
             };
         }):null;
-
+        console.log(postImages);
+        
         return(
             <div className="container mt-4 post-details-component">
                 <h1 className="mb-4 text-left">
@@ -266,22 +268,23 @@ class PostDetails extends Component {
                                     </p>
                                 </div>
                             </div>
-                            <div className="card-footer ">
-                                {/* <div className="btn-group d-flex"> */}
+                            {
+                                this.props.isAuthenticated?
+                                <div className="card-footer ">
                                     <button className={"btn mx-1 "+
-                                    (this.isPostLiked()?"btn-success":"btn-secondary")}
+                                    (this.isPostLiked()?"btn-success":"btn-outline-secondary")}
                                         onClick={this.onClickLikeButton}
                                     >
                                     <i className="far fa-thumbs-up"></i> Like
                                     </button>
                                     <button className={"btn mx-1 "+
-                                    (this.isPostDisliked()?"btn-danger":"btn-secondary")}
+                                    (this.isPostDisliked()?"btn-danger":"btn-outline-secondary")}
                                         onClick={this.onClickDislikeButton}
                                     >
-                                    <i className="far fa-thumbs-down"></i> Dislike</button>
-                              
-                                {/* </div> */}
-                            </div>
+                                    <i className="far fa-thumbs-down"></i> Dislike</button>                           
+                                </div>
+                                :null
+                            }
                         </div>
                         
                     </div>
@@ -354,6 +357,7 @@ class PostDetails extends Component {
                                         <label className="col-lg-2 col-md-3 font-weight-bold">Images</label>
                                         <div className="col-sm-8 col-md-6 col-lg-4">
                                         {
+                                      
                                             postImages?
                                             <ImageGallery items={postImages} showPlayButton={false} showFullscreenButton={false} useBrowserFullscreen={false}/>
                                             :null
@@ -362,7 +366,7 @@ class PostDetails extends Component {
                                         </div>
                                     </div>
                                     {
-                                        this.state.post!=null && this.state.post.author.id==this.props.authUser.id?
+                                        this.props.isAuthenticated && this.state.post!=null && this.state.post.author.id==this.props.authUser.id?
                                         <div className="text-right mt-4 mt-sm-0">
                                             <button className={"btn btn-block-xs-only btn-warning"}
                                                 onClick={this.onClickEditButton}

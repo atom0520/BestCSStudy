@@ -13,7 +13,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace BestCSStudy.API.Controllers
 {
     [ServiceFilter(typeof(LogUserActivity))]
-    [Authorize]
+
     [Route("api/[controller]")]
     [ApiController]
     public class UsersController : ControllerBase
@@ -60,6 +60,7 @@ namespace BestCSStudy.API.Controllers
             return Ok(userToReturn);
         }
 
+        [Authorize]
         [HttpGet("auth/{id}")]
         public async Task<IActionResult> GetAuthUser(int id)
         {

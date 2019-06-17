@@ -12,15 +12,20 @@ namespace BestCSStudy.API.Helpers
         public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
             var resultContext = await next();
+            
+            var userClaim = resultContext.HttpContext.User
+            .FindFirst(ClaimTypes.NameIdentifier);
 
-            var userId = int.Parse(resultContext.HttpContext.User
-                .FindFirst(ClaimTypes.NameIdentifier).Value);
+            if(userClaim!=null){
+                var userId = int.Parse(userClaim.Value);
 
-            var repo = resultContext.HttpContext.RequestServices.GetService<IAppRepository>();
-            var user = await repo.GetUser(userId);
+                var repo = resultContext.HttpContext.RequestServices.GetService<IAppRepository>();
+                var user = await repo.GetUser(userId);
 
-            user.LastActive = DateTime.Now;
-            await repo.SaveAll();
+                user.LastActive = DateTime.Now;
+                await repo.SaveAll();
+            }
+          
         }
     }
 }

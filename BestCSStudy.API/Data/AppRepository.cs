@@ -66,7 +66,7 @@ namespace BestCSStudy.API.Data
         }
         public async Task<Post> GetPost(int id)
         {
-            var post = await _context.Posts.Include(p => p.PostImages).Include(p => p.Author).ThenInclude(a=>a.Photos).Include(p => p.Likers).Include(p => p.Dislikers).FirstOrDefaultAsync(p => p.Id == id);
+            var post = await _context.Posts.Include(p => p.PostImages).Include(p => p.Author).ThenInclude(a=>a.Photos).Include(p => p.Likers).Include(p => p.Dislikers).Include(p => p.Tags).ThenInclude(t=>t.Tag).FirstOrDefaultAsync(p => p.Id == id);
 
             return post;
         }
@@ -123,7 +123,7 @@ namespace BestCSStudy.API.Data
         public async Task<PagedList<Post>> GetPosts(PostParams postParams)
         {
             var posts =  _context.Posts.Include(p => p.PostImages).Include(p => p.Likers).Include(p => p.Dislikers)
-                .Include(p => p.Author).ThenInclude(a=>a.Photos)
+                .Include(p => p.Author).ThenInclude(a=>a.Photos).Include(p => p.Tags).ThenInclude(t=>t.Tag)
                 .OrderByDescending(u=>u.Updated).AsQueryable();
 
             // posts = posts.Where(u=>u.Id != userParams.UserId);
@@ -142,7 +142,8 @@ namespace BestCSStudy.API.Data
 
                     postsRelevance[post.Id]+=Global.CountStringOccurrences(post.Title, postParams.Search);
                     postsRelevance[post.Id]+=Global.CountStringOccurrences(post.Description, postParams.Search);
-                    postsRelevance[post.Id]+=Global.CountStringOccurrences(post.Tags, postParams.Search);
+                    
+                    postsRelevance[post.Id]+=Global.CountStringOccurrences(string.Join(",", post.Tags.Select(t=>t.Tag.Value)), postParams.Search);
                     
                 }
 
@@ -266,6 +267,11 @@ namespace BestCSStudy.API.Data
             return messages;
         }
 
-    
+        public async Task<Tag> GetTag(string value)
+        {
+            var tag = await _context.Tags.Include(t => t.Posts).FirstOrDefaultAsync(t => t.Value == value);
+
+            return tag;
+        }
     }
 }

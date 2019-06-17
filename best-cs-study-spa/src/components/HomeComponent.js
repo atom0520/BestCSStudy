@@ -1,53 +1,70 @@
 import React, { Component } from 'react';
 import { postCategoryOptions } from "../shared/global";
-
-
-const styles = {
-    jumbotron: {
-      backgroundImage: `url(https://content-static.upwork.com/blog/uploads/sites/3/2019/04/03142133/How-Do-You-Hire-a-Programmer-feature-960x400.png)`,
-
-      
-    },
-    container: {
-        
-        // position: "fixed",
-        
-        // height:"100%",
-        // width:"100%"
-    },
-      
-    center: {
-        margin: "0",
-        position: "absolute",
-        top: "50%",
-        left: "50%",
-        msTransform: "translate(-50%, -50%)",
-        transform: "translate(-50%, -50%)"
-    }
-  }
+import styles from "./HomeComponent.module.scss";
+import { withRouter } from 'react-router-dom';
 
 class Home extends Component {
 
     constructor(props){
         super(props);
         this.state = {
-            registerMode: false
+            postParams:{
+                category: "",
+                search: ""
+            },
+
+            trendingTags:["Game Development", "Game Development","Game Development","Game Development","Game Development","Game Development","Machine Learning", "Web Development", "Virtual Reality", "Augmented Reality"]
         };
 
-        this.registerToggle = this.registerToggle.bind(this);
-        this.cancelRegisterMode = this.cancelRegisterMode.bind(this);
+        this.onClickTagButton = this.onClickTagButton.bind(this);
+        this.handleInputChangePostParamsForm = this.handleInputChangePostParamsForm.bind(this);
+
+        this.handleSubmitPostParamsForm = this.handleSubmitPostParamsForm.bind(this);
     }
 
-    registerToggle(){
+    // registerToggle(){
+    //     this.setState({
+    //         registerMode: true 
+    //     });
+    // }
+
+    // cancelRegisterMode(){
+    //     console.log('HomeComponent.cancelRegisterMode');
+    //     this.setState({
+    //         registerMode: false 
+    //     });
+    // }
+    handleInputChangePostParamsForm(event){
+
+        const target = event.target;
+        const value = target.value;
+        const name = target.name;
+
         this.setState({
-            registerMode: true 
+            postParams: {...this.state.postParams, 
+                [name]: value
+            }
         });
     }
 
-    cancelRegisterMode(){
-        console.log('HomeComponent.cancelRegisterMode');
-        this.setState({
-            registerMode: false 
+    onClickTagButton(tag){
+        console.log('HomeComponent.onClickTagButton', tag);
+        this.props.history.push({
+            pathname:'/search',
+            state:{
+                search: tag
+            } 
+        });
+    }
+
+    handleSubmitPostParamsForm(event){
+        event.preventDefault();
+        this.props.history.push({
+            pathname:'/search',
+            state:{
+                search: this.state.postParams.search,
+                category: this.state.postParams.category
+            } 
         });
     }
 
@@ -55,74 +72,87 @@ class Home extends Component {
         console.log('registerMode: '+this.state.registerMode);
 
         return (
-            <div className="" style={styles.container}>
-  
-                <div className="" style={styles.center}>
-                    <h1 className="" >Best CS Study</h1>
-                    <p >Knowledge is infinite while time is limited. Here you can find the most efficient way to learn your desired skillset.</p>
-                    {/* <p >
-                        <a href="#" className="btn btn-lg btn-secondary">Learn more</a>
-                    </p> */}
-                    <form >
-                        <div className="input-group">
-                            <input className="form-control input-sm" type="text" placeholder="Web Development"
-                                name="content"
-                            
-                            />
-                       
-                            <div className="input-group-append">
-                                <select className="form-control" style={{borderRadius:'0'}}>
-                                    {
-                                        postCategoryOptions.map(category=>{
-                                            return (
-                                                <option key={category.value} value={category.value}>
-                                                    { category.display }
-                                                </option>
-                                            );
-                                        })
-                                    }
-                                </select>   
-                                <button type="submit" className="btn btn-primary" >Search</button>
-                            </div>
-                        </div>
-                    </form>
-                  
-                </div>
-       
-                {/* <div className="jumbotron jumbotron-fluid" style={styles.jumbotron}>
+            <div className={styles.background}>
+         
+            <div className={styles.center} >
+         
+                <div className="container" >
+                {/* <div className={"jumbotron jumbotron-fluid "+styles.jumbotron}>
                     <div className="container text-left" >
                         <h1 className="display-4 text-white">Best CS Study</h1>
                         <p className="lead text-white">Knowledge is infinite while time is limited. Here you can find the most efficient way to learn your desired skillset.</p>
                        
                     </div>
-                </div>
-                <div className="container">
-                {
-                    !this.state.registerMode?
-                    <div style={{textAlign: 'center'}}>
-                        <h1>Find your match</h1>
-                        <p className="lead">Come on in to view your matches... All you need to do is sign up!</p>
-                        <div className="text-center">
-                            <button className="btn btn-primary btn-lg mr-2" onClick={this.registerToggle}>Register</button>
-                            <button className="btn btn-info btn-lg">Learn more</button>
-                        </div>
-                    </div>
-                    :
-                    <div className="container">
-                        <div className="row justify-content-center">
-                            <div className="col-4">
-                                <Register 
-                                    cancelRegister={this.cancelRegisterMode}
-                                />
+                </div> */}
+                    <div className="row">
+                        <div className="col-lg-8 offset-lg-2">
+                            <div className="px-2">
+                                <h1 className="" >Best CS Study</h1>
+                                <p >Knowledge is infinite while time is limited. Here you can find the most efficient way to learn your desired skillset.</p>
+                             
+                                <form noValidate>
+                                    <div className="input-group">
+                                        <input className="form-control input-sm" type="text" placeholder="Web Development"
+                                            name="search"
+                                            value={this.state.postParams.search}
+                                            onChange={this.handleInputChangePostParamsForm}
+                                        />
+                                
+                                        <div className="input-group-append">
+                                            <select className="form-control" style={{borderRadius:'0'}}
+                                                name="category"
+                                                value={this.state.postParams.category}
+                                                onChange={this.handleInputChangePostParamsForm}
+                                            >
+                                                <option key={"all"} value={""}>
+                                                    { "All" }
+                                                </option>
+                                                {
+                                                    postCategoryOptions.map(category=>{
+                                                        return (
+                                                            <option key={category.value} value={category.value}>
+                                                                { category.display }
+                                                            </option>
+                                                        );
+                                                    })
+                                                }
+                                            </select>   
+                                            <button type="submit" className="btn btn-primary" onClick={this.handleSubmitPostParamsForm}>Search</button>
+                                        </div>
+                                    </div>
+                                </form>
                             </div>
                         </div>
+                        <div className="col-lg-10 offset-lg-1">
+                            <div className="px-2">
+                                <hr className="mt-5 mb-5"></hr>
+                                <h3 >Popular Topics</h3>
+                                <div className="row" >
+                                    {
+                                        this.state.trendingTags.map((tag,index)=>{
+                                            return (
+                                                <div key={index} className="col-4 col-lg-3 px-1 py-1">
+                                                    <button className="btn btn-outline-primary btn-block"
+                                                        onClick={(e)=>{this.onClickTagButton(tag);}}
+                                                    >{tag}</button>
+                                                </div>
+                                            )
+                                        })
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                     
                     </div>
-                }
-                </div> */}
+                </div>
+            
+              
+              
+            </div>
             </div>
         );
     }
   
 };
 
-export default Home;
+export default withRouter(Home);

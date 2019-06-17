@@ -4,6 +4,7 @@ import { signupUser } from '../redux/ActionCreators';
 import { Loading } from './LoadingComponent';
 import Home from './HomeComponent';
 import Header from './HeaderComponent';
+import Footer from './FooterComponent';
 import Lists from './ListsComponent';
 import MemberList from './member/MemberListComponent';
 import MemberDetails from './MemberDetailsComponent';
@@ -16,6 +17,9 @@ import EditPost from './EditPostComponent';
 import LikedPosts from './LikedPostsComponent';
 import UserPosts from './UserPostsComponent';
 import { Switch, Route, Redirect, withRouter } from 'react-router-dom';
+import { Modal } from 'react-bootstrap';
+import Register from './RegisterComponent';
+import Login from './LoginComponent';
 // import { Modal } from 'react-bootstrap';
 // import Register from './RegisterComponent';
 // import Login from './LoginComponent';
@@ -69,15 +73,15 @@ class Main extends Component {
         super(props);
      
        
-        // this.state = {
-        //     modal: {
-        //         show: false,
-        //         type: ''
-        //     }
-           
-        // };
-        // this.showModal = this.showModal.bind(this);
-        // this.hideModal = this.hideModal.bind(this);
+        this.state = {
+            modal: {
+                show: false,
+                type: ''
+            }   
+        };
+
+        this.showModal = this.showModal.bind(this);
+        this.hideModal = this.hideModal.bind(this);
     }
 
     componentDidMount() {
@@ -120,6 +124,18 @@ class Main extends Component {
     //         modal: {...this.state.modal, show:false}
     //     });
     // }
+    showModal(type){
+        this.setState({
+            modal: {...this.state.modal, show:true, type:type}
+        });
+    }
+
+    hideModal(){
+        console.log("MainComponent.hideModal");
+        this.setState({
+            modal: {...this.state.modal, show:false}
+        });
+    }
 
     render(){
         console.log("render main component");
@@ -140,13 +156,13 @@ class Main extends Component {
                             signupUser={this.props.signupUser} />}
                     />
 
-                    <Route exact path="/search" render={(props) => <Posts/>} />
-                    <AuthGuardedRoute exact path="/posts/:id" render={(props) => <PostDetails />} />
+                    <Route exact path="/search" render={(props) => <Posts showModal={this.showModal}/>}  />
+                    <Route exact path="/posts/:id" render={(props) => <PostDetails />} />
                     <AuthGuardedRoute path="/posts/:id/edit" render={(props) => <EditPost />} />
                     <AuthGuardedRoute path="/likedPosts" render={(props) => <LikedPosts/>} />
                     <AuthGuardedRoute path="/userPosts/:id" render={(props) => <UserPosts/>} />
                     {/* <AuthGuardedRoute exact path="/members" render={(props) => <MemberList/>} /> */}
-                    <AuthGuardedRoute path="/members/:id" render={(props) => <MemberDetails />} />
+                    <Route path="/members/:id" render={(props) => <MemberDetails />} />
                     <AuthGuardedRoute path="/member/edit" render={(props) => <MemberEdit/>} />
                     <AuthGuardedRoute path="/messages" render={(props) => <Messages/>} />            
                     <AuthGuardedRoute path="/lists" render={(props) => <Lists/>} />
@@ -154,7 +170,7 @@ class Main extends Component {
 
                     <Redirect to="/home" />
                 </Switch>
-                
+                {/* <Footer/> */}
    
                 {/* <div className="container">
                     <h1 className="my-4">Dating App</h1>
@@ -165,7 +181,36 @@ class Main extends Component {
                         errMess={this.props.values.errMess}
                     />     
                 </div> */}
-              
+                <Modal
+                    show={this.state.modal.show}
+                    onHide={this.hideModal}
+                    animation={true}
+                    backdrop={'static'}
+                    centered
+                    scrollable={true}
+                >
+                    {/* <Modal.Header closeButton>
+                    <Modal.Title id="contained-modal-title-vcenter">
+                        Modal heading
+                    </Modal.Title>
+                    </Modal.Header> */}
+                    <Modal.Body className="mx-4">
+                        {
+                            this.state.modal.type=='login'?
+                            <Login close={this.hideModal}/>
+                            :null
+                        }
+                        {
+                            this.state.modal.type=='register'?
+                            <Register close={this.hideModal}/>
+                            : null
+                        }
+                       
+                    </Modal.Body>
+                    {/* <Modal.Footer>
+                    <Button onClick={() => this.setState({ showLoginModal: false })}>Close</Button>
+                    </Modal.Footer> */}
+                </Modal>
             </div>
         )
     }

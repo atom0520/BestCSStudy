@@ -9,6 +9,7 @@ import { withRouter } from 'react-router-dom';
 
 const mapStateToProps = state => {
     return {
+        isAuthenticated: state.auth.isAuthenticated,
         authUser: state.auth.user
     }
 }
@@ -37,8 +38,8 @@ class Posts extends Component {
         this.state = {
             posts: null,
             postParams:{
-                category: "",
-                search: "",
+                category: this.props.location.state?this.props.location.state.category||"":"",
+                search: this.props.location.state?this.props.location.state.search||"":"",
                 orderBy: "updated"
             },
             pagination: {
@@ -57,6 +58,8 @@ class Posts extends Component {
         this.handleSubmitPostParamsForm = this.handleSubmitPostParamsForm.bind(this);
 
         this.onClickEditPostButton = this.onClickEditPostButton.bind(this);
+
+        console.log(this.props.location);
     }
 
     componentDidMount() {
@@ -319,7 +322,7 @@ class Posts extends Component {
                     <br/>
                     <div className="row mb-4">                    
                         {
-                            this.state.posts?
+                            this.state.posts && this.state.posts.length?
                             this.state.posts.map((post, index)=>{
                                 return(
                                     <div key={post.id} className={"col-12 p-4 border-bottom "+(index==0?"border-top ":"")+styles.divPost} onClick={()=>this.onClickPost(post.id)}>
@@ -345,38 +348,60 @@ class Posts extends Component {
                                                 </div>
                                               
                                                 <div className="mb-5">{post.description}</div>
-                                                <div className={"row text-left"} >
+                                                {
+                                                    this.props.isAuthenticated?
+                                                    <div className={"row text-left"} >
+                                                        <div className="col">
+                                                            <button className={"btn mr-2 "+(post.likers.includes(this.props.authUser.id)?"btn-success":"btn-outline-secondary")}
+                                                                onClick={(e)=>{
+                                                                    e.stopPropagation(); 
+                                                                    this.handleLikePost(index)}}
+                                                            >
+                                                                <i className="far fa-thumbs-up"></i> Like · {post.likers.length}
+                                                            </button>
+                                                            <button className={"btn "+(post.dislikers.includes(this.props.authUser.id)?"btn-danger":"btn-outline-secondary")}
+                                                                onClick={(e)=>{
+                                                                    e.stopPropagation(); 
+                                                                    this.handleDislikePost(index)}}
+                                                            >
+                                                                <i className="far fa-thumbs-down"></i> Dislike · {post.dislikers.length}
+                                                            </button>
+                                                        </div>
+                                                        {
+                                                            post.author.id==this.props.authUser.id?
+                                                            <div className="col-4 text-right">
+                                                                <button className={"btn btn-warning"}
+                                                                    onClick={(e)=>{
+                                                                        e.stopPropagation();
+                                                                        this.onClickEditPostButton(post.id);
+                                                                    }}
+                                                                >
+                                                                    <i className="fas fa-edit"></i> Edit
+                                                                </button>
+                                                            </div>
+                                                            :null
+                                                        }
+                                                    </div>
+                                                    :
+                                                    <div className={"row text-left"} >
                                                     <div className="col">
-                                                        <button className={"btn mr-2 "+(post.likers.includes(this.props.authUser.id)?"btn-success":"btn-secondary")}
-                                                            onClick={(e)=>{
+                                                        <button className={"btn mr-2 btn-outline-secondary"}
+                                                             onClick={(e)=>{
                                                                 e.stopPropagation(); 
-                                                                this.handleLikePost(index)}}
+                                                                this.props.showModal("login"); }}
                                                         >
                                                             <i className="far fa-thumbs-up"></i> Like · {post.likers.length}
                                                         </button>
-                                                        <button className={"btn "+(post.dislikers.includes(this.props.authUser.id)?"btn-danger":"btn-secondary")}
+                                                        <button className={"btn btn-outline-secondary"}
                                                             onClick={(e)=>{
                                                                 e.stopPropagation(); 
-                                                                this.handleDislikePost(index)}}
+                                                                this.props.showModal("login"); }}
                                                         >
                                                             <i className="far fa-thumbs-down"></i> Dislike · {post.dislikers.length}
                                                         </button>
                                                     </div>
-                                                    {
-                                                        post.author.id==this.props.authUser.id?
-                                                        <div className="col-4 text-right">
-                                                            <button className={"btn btn-warning"}
-                                                                onClick={(e)=>{
-                                                                    e.stopPropagation();
-                                                                    this.onClickEditPostButton(post.id);
-                                                                }}
-                                                            >
-                                                                <i className="fas fa-edit"></i> Edit
-                                                            </button>
-                                                        </div>
-                                                        :null
-                                                    }
                                                 </div>
+                                                }
                                                 {/* <span className="ml-auto text-right">
                                                     
                                                 </span> */}
@@ -392,6 +417,11 @@ class Posts extends Component {
                                     // </div>
                                 );
                             })
+                            :
+                            this.state.posts && this.state.posts.length==0?
+                            <h3 className="mx-auto text-secondary">
+                                No relevant post yet.
+                            </h3>
                             :null
                         }                 
                         

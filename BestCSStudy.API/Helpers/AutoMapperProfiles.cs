@@ -50,8 +50,13 @@ namespace BestCSStudy.API.Helpers
                 .ForMember(dest => dest.SenderPhotoUrl, opt => opt.MapFrom(src => src.Sender.Photos.FirstOrDefault(p=>p.IsMain).Url))
                 .ForMember(dest => dest.RecipientPhotoUrl, opt => opt.MapFrom(src => src.Recipient.Photos.FirstOrDefault(p=>p.IsMain).Url));
             
-            CreateMap<Post, PostForDetailsDto>();
-            CreateMap<PostForCreationDto, Post>();
+            CreateMap<Post, PostForDetailsDto>()
+                .ForMember(dest=>dest.Tags, opt=>{
+                    opt.MapFrom(d=>d.Tags.Select(t=>t.Tag.Value));
+                });
+
+            // CreateMap<PostForCreationDto, Post>();
+
             CreateMap<Post, PostForListDto>()
                 .ForMember(dest=>dest.MainPostImageUrl, opt=>{
                     opt.MapFrom(src => src.PostImages.FirstOrDefault(p => p.IsMain).Url);
@@ -61,8 +66,11 @@ namespace BestCSStudy.API.Helpers
                 })
                 .ForMember(dest=>dest.Dislikers, opt=>{
                     opt.MapFrom(d=>d.Dislikers.Select(u=>u.DislikerId));
+                })
+               .ForMember(dest=>dest.Tags, opt=>{
+                    opt.MapFrom(d=>d.Tags.Select(t=>t.Tag.Value));
                 });
-            
+
              CreateMap<Post, LikedPostDto>()
                 .ForMember(dest=>dest.MainPostImageUrl, opt=>{
                     opt.MapFrom(src => src.PostImages.FirstOrDefault(p => p.IsMain).Url);

@@ -50,11 +50,11 @@ body {
 }
 
 .App {
-  height: 100%;
+  position: relative;
+  min-height: 100% !important; 
   width: 100%;
 }
 
 .Main {
-  height: 100%;
-  width: 100%;
+  padding-bottom:80px; 
 }

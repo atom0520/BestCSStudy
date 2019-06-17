@@ -18,7 +18,6 @@ using Microsoft.Extensions.Options;
 namespace BestCSStudy.API.Controllers
 {
     [ServiceFilter(typeof(LogUserActivity))]
-    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class PostsController : ControllerBase
@@ -46,11 +45,18 @@ namespace BestCSStudy.API.Controllers
         [HttpGet]
         public async Task<IActionResult> GetPosts([FromQuery]PostParams postParams)
         {
-            var currentUserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            var userClaim = User.FindFirst(ClaimTypes.NameIdentifier);
 
-            var userFromRepo = await _repo.GetUser(currentUserId);
+            if(userClaim!=null)
+            {
+                var userId = int.Parse(userClaim.Value);
+                 postParams.UserId = userId;
+            }
+            // var currentUserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
 
-            postParams.UserId = currentUserId;
+            // var userFromRepo = await _repo.GetUser(currentUserId);
+
+            // postParams.UserId = currentUserId;
 
             // if(string.IsNullOrEmpty(userParams.Gender)){
             //     userParams.Gender = userFromRepo.Gender == "male"? "female" : "male";
@@ -117,6 +123,8 @@ namespace BestCSStudy.API.Controllers
             return Ok(postsToReturn);
         }
 
+       
+        // [Authorize]
         [HttpGet("{id}", Name="GetPost")]
         public async Task<IActionResult> GetPost(int id)
         {
@@ -133,20 +141,44 @@ namespace BestCSStudy.API.Controllers
             var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
             
             var userFromRepo = await _repo.GetUser(userId);
-            // var postToCreate = new Post();
+            var postToCreate = new Post();
 
-            // postToCreate.Title = postForCreationDto.Title;
-            // postToCreate.Description = postForCreationDto.Description;
-            // postToCreate.Category = postForCreationDto.Category;
-            // postToCreate.Tags = postForCreationDto.Tags;
-            // postToCreate.Links = postForCreationDto.Links;
-            // postToCreate.Created = postForCreationDto.Created;
-            var postToCreate = _mapper.Map<Post>(postForCreationDto);
+            postToCreate.Title = postForCreationDto.Title;
+            postToCreate.Description = postForCreationDto.Description;
+            postToCreate.Category = postForCreationDto.Category;
+            postToCreate.Links = postForCreationDto.Links;
+            postToCreate.Created = postForCreationDto.Created;
+            postToCreate.Updated = postForCreationDto.Updated;
+            // var postToCreate = _mapper.Map<Post>(postForCreationDto);
+
             userFromRepo.Posts.Add(postToCreate);
             // _repo.Add<Post>(postToCreate);
             await _repo.SaveAll();
             
             var postFromRepo = await _repo.GetPost(postToCreate.Id);
+
+            var tags = postForCreationDto.Tags.Split(",");
+            for(int i=0; i<tags.Length; i++){
+
+                var tag = await _repo.GetTag(tags[i]);
+
+                if(tag==null){
+                    tag =new Tag {
+                        Value = tags[i]
+                    };
+
+                    _repo.Add(tag);
+                    await _repo.SaveAll();
+                    // tag = await _repo.GetTag(tags[i]);
+                }
+                
+                var postTag = new PostTag {
+                    PostId = postFromRepo.Id,
+                    TagId = tag.Id
+                };
+                
+                postFromRepo.Tags.Add(postTag);
+            }
 
             var files = new IFormFile[]{
                 postForCreationDto.Image1, 
@@ -243,9 +275,39 @@ namespace BestCSStudy.API.Controllers
             postFromRepo.Title = postForUpdateDto.Title;
             postFromRepo.Description = postForUpdateDto.Description;
             postFromRepo.Category = postForUpdateDto.Category;
-            postFromRepo.Tags = postForUpdateDto.Tags;
+            // postFromRepo.Tags = postForUpdateDto.Tags;
             postFromRepo.Links = postForUpdateDto.Links;
             postFromRepo.Updated = postForUpdateDto.Updated;
+
+            var newTags = postForUpdateDto.Tags.Split(",").ToList();
+            foreach(var oldTag in postFromRepo.Tags){
+                var index = newTags.IndexOf(oldTag.Tag.Value);
+                if(index==-1){
+                    _repo.Delete(oldTag);
+                }
+                else{
+                    newTags.RemoveAt(index);
+                }
+            }
+
+            foreach(var newTag in newTags){
+                var tag = await _repo.GetTag(newTag);
+
+                if(tag==null){
+                    tag =new Tag {
+                        Value = newTag
+                    };
+
+                    _repo.Add(tag);
+                }
+                
+                var postTag = new PostTag {
+                    PostId = tag.Id,
+                    TagId = postFromRepo.Id
+                };
+                
+                postFromRepo.Tags.Add(postTag);
+            }
 
             var postOldMainImage = await _repo.GetPostMainImage(id);
             if(postOldMainImage!= null && postOldMainImage.Id != -postForUpdateDto.MainImage){
