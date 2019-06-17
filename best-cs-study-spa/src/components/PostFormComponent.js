@@ -1,8 +1,8 @@
 import React, { Component, useCallback } from 'react'
-import { createPost } from '../redux/ActionCreators';
+import { createPost, fetchTags } from '../redux/ActionCreators';
 import { alertifyService } from '../services/AlertifyService';
 import { connect } from 'react-redux';
-import { postCategoryOptions } from "../shared/global";
+import { postCategoryOptions, defaultTags } from "../shared/global";
 import TagsInput from 'react-tagsinput'
 import 'react-tagsinput/react-tagsinput.css' // If using WebPack and style-loader.
 
@@ -12,14 +12,14 @@ import Dropzone, {useDropzone} from 'react-dropzone';
 import { required, minLength, maxLength } from '../shared/validators';
 import styles from './CreatePostComponent.module.scss';
 
-function states () {
-    return [
-      {name: 'Web Development'},
-      {name: 'Machine Learning'},
-      {name: 'Game Development'},
-      {name: 'Virtual Reality'}
-    ]
-  }
+// function states () {
+//     return [
+//       {name: 'Web Development'},
+//       {name: 'Machine Learning'},
+//       {name: 'Game Development'},
+//       {name: 'Virtual Reality'}
+//     ]
+//   }
 
 const mapStateToProps = state => {
     return {
@@ -27,6 +27,7 @@ const mapStateToProps = state => {
 }
 
 const mapDispatchToProps = dispatch => ({
+    fetchTags: (tagParams, onSuccess, onError) => { dispatch(fetchTags(tagParams, onSuccess, onError)) }
     // createPost: (title, description, category, tags, links, images, onSuccess, onError) => { dispatch(createPost(title, description, category, tags, links, images, onSuccess, onError)) }
 });
 
@@ -69,8 +70,8 @@ class PostForm extends Component {
                 isUploadingImage: false,
                 valid: false,
                 touched: false
-            }
-            
+            },
+            suggestedTags: defaultTags.map(tag=>{return {name: tag}})
         }
 
         this.handleInputChangeTags = this.handleInputChangeTags.bind(this);
@@ -101,7 +102,6 @@ class PostForm extends Component {
 
     componentDidMount(){
         console.log("PostForm.componentDidMount");
-
         
         if(this.props.post!=null){
             let form = this.state.form;
@@ -128,6 +128,32 @@ class PostForm extends Component {
             console.log(form);
             this.setState({form:form});
         }
+
+        setTimeout(this.props.fetchTags(
+            {
+                orderBy:"count",
+                minCount: 0
+            },
+            (tags)=>{                    
+                alertifyService.success('Fetched tags successfully!'); 
+                console.log(tags);
+                tags = tags.map(tag=>{return {name:tag.value}});
+                let suggestedTags = this.state.suggestedTags;
+                for(let i=0; i<suggestedTags.length; i++){
+                    if(tags.findIndex(tag=>tag.name==suggestedTags[i].name)==-1){
+                        tags.push(suggestedTags[i]);
+                    }
+                }
+                console.log(tags);
+                this.setState({
+                    suggestedTags: tags
+                });
+            },
+            (error)=>{
+
+                alertifyService.error(error.message);
+            }
+        ),1);
     }
 
     handleInputChangeTags(tags){
@@ -341,13 +367,15 @@ class PostForm extends Component {
             props.onChange(e)
           }
         }
-  
+        console.log(props);
         const inputValue = (props.value && props.value.trim().toLowerCase()) || '';
         const inputLength = inputValue.length;
 
-        let suggestions = states().filter((state) => {
-          return state.name.toLowerCase().slice(0, inputLength) === inputValue
-        })
+        let suggestions = this.state.suggestedTags.filter((tag) => {
+          return tag.name.toLowerCase().slice(0, inputLength) === inputValue
+        });
+
+        console.log(suggestions);
 
         return (
             
@@ -628,9 +656,9 @@ class PostForm extends Component {
                                         disabled:this.state.form.fields.tags.value.length>=maxTagNumber
                                     }} 
                                     
-                                    renderInput={this.autocompleteRenderInput} 
+                                    renderInput={this.autocompleteRenderInput.bind(this)} 
                                     renderLayout={this.tagsInputRenderLayout} 
-                                    value={this.state.form.fields.tags.value} 
+                                    value={this.state.form.fields.tags.value}
                                     onChange={this.handleInputChangeTags} />
                                     <div className="invalid-feedback" style={{display:"block"}}>{this.showFormFieldError('tags')?this.state.form.fields.tags.error:''}</div>
                                 </div>

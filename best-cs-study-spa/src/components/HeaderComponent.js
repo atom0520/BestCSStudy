@@ -27,14 +27,6 @@ class Header extends Component {
         super(props);
 
         this.state = {
-            // loginForm: {
-            //     username: '',
-            //     password: '',
-            //     touched: {
-            //         username: false,
-            //         password: false
-            //     }
-            // },
             modal: {
                 show: false,
                 type: ''
@@ -42,16 +34,8 @@ class Header extends Component {
            
         };
 
-        // this.handleInputChangeLoginForm = this.handleInputChangeLoginForm.bind(this);
-        // this.handleSubmitLoginForm = this.handleSubmitLoginForm.bind(this);
-        // this.handleBlurLoginForm = this.handleBlurLoginForm.bind(this);
-
         this.handleClickEditProfileLink = this.handleClickEditProfileLink.bind(this);
         this.handleClickLogoutLink = this.handleClickLogoutLink.bind(this);
-
-        // this.showModal = this.showModal.bind(this);
-        // this.hideModal = this.hideModal.bind(this);
-
 
     }
 
@@ -59,74 +43,13 @@ class Header extends Component {
         if(this.props.auth.isAuthenticated){
             this.props.fetchAuthUser(this.props.auth.user.id,
                 (user)=>{
-                    alertifyService.message('Fetched auth user successfully!',user);
+                    alertifyService.success('Fetched auth user successfully!');
                 },
                 err=>{
-                    alertifyService.message('Failed to fetch auth user!');
+                    alertifyService.success('Failed to fetch auth user!');
                 });
         }
     }
-    // handleInputChangeLoginForm(event){
-    //     const target = event.target;
-    //     const value = target.value;
-    //     const name = target.name;
-
-    //     this.setState({
-    //         loginForm: {...this.state.loginForm, 
-    //             [name]: value
-    //         }
-    //     });
-    // }
-
-    // handleSubmitLoginForm(event) {
-    //     event.preventDefault();
-
-    //     this.props.loginUser(
-    //         {username:this.state.loginForm.username, password:this.state.loginForm.password},
-    //         ()=>{
-    //             alertifyService.success('Logged in successfully!');
-    //             this.props.history.push('/members');
-    //         },
-    //         (error)=>{
-
-    //             alertifyService.error(error.message);
-    //         }
-    //     );
-    // }
-
-    // handleBlurLoginForm = (field) => (evt) => {
-    //     this.setState({
-    //         loginForm: {...this.state.loginForm, touched: {...this.state.loginForm.touched, [field]: true} }
-    //     });
-    // }
-
-    // validateLoginForm(){
-    //     let errors = {
-    //         username: '',
-    //         password: ''
-    //     };
-
-    //     let validForm = true;
-
-    //     if (this.state.loginForm.username == ''){
-    //         validForm = false;
-    //         if (this.state.loginForm.touched.username) {
-    //             errors.username = 'Username is required.';
-    //         }           
-    //     }
-
-    //     if (this.state.loginForm.password == ''){
-    //         validForm = false;
-    //         if (this.state.loginForm.touched.password) {
-    //             errors.password = 'Password is required.';
-    //         }
-    //     }
-        
-    //     return {
-    //         errorsLoginForm: errors, 
-    //         validLoginForm: validForm
-    //     };
-    // }
 
     handleClickLogoutLink(event){
         this.props.logoutUser(

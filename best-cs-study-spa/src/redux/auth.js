@@ -1,5 +1,6 @@
 import * as ActionTypes from './ActionTypes';
 import JwtDecode from 'jwt-decode';
+import { store } from './store';
 
 const initAuthState = ()=>{
     var initAuthState = {
@@ -13,23 +14,19 @@ const initAuthState = ()=>{
     };
 
     const token = localStorage.getItem('token');
-    
-    if(token != null){
+    const user = JSON.parse(localStorage.getItem('user'));
+    if(token != null && user != null){
         const decodedToken = JwtDecode(token);
         if (typeof decodedToken.exp === 'undefined' || decodedToken.exp > Date.now().valueOf() / 1000) {
             initAuthState.token = token;
             initAuthState.decodedToken = decodedToken;
             initAuthState.isAuthenticated = true;
+            initAuthState.user = user;
+
         }
         else{
             localStorage.removeItem('token');
-        }
-
-        const user = JSON.parse(localStorage.getItem('user'));
-        if(user!=null){
-            initAuthState.user = user;
-        }else{
-            localStorage.removeItem('token');
+            localStorage.removeItem('user');
         }
     }
 

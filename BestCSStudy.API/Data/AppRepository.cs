@@ -273,5 +273,34 @@ namespace BestCSStudy.API.Data
 
             return tag;
         }
+
+        public async Task<IEnumerable<Tag>> GetTags(TagParams tagParams)
+        {
+            var tags =  _context.Tags.Include(t => t.Posts).AsQueryable();
+            
+            if(!string.IsNullOrEmpty(tagParams.OrderBy)){
+                switch (tagParams.OrderBy) {
+                    case "count":
+                        tags = tags.OrderByDescending(t => t.Posts.Count);
+                        break;
+                    
+                    default:
+                        tags = tags.OrderByDescending(t => t.Posts.Count);
+                        break;
+                }
+            }
+
+            if(tagParams.MinCount>0){
+                tags = tags.Where(t=>t.Posts.Count >= tagParams.MinCount);
+            }
+
+            if(tagParams.MaxReturnNumber>0){
+                tags = tags.Take(tagParams.MaxReturnNumber);
+            }
+
+            var tagsList = await tags.ToListAsync();
+            
+            return tagsList;
+        }
     }
 }

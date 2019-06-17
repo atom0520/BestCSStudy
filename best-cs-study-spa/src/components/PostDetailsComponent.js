@@ -51,7 +51,6 @@ class PostDetails extends Component {
             this.props.match.params.id,
             (post)=>{                    
                 alertifyService.success('Fetched post '+this.props.match.params.id+' successfully!');     
-                console.log(post);
 
                 post.tags = post.tags;
                 let links = post.links.split(',');
@@ -59,7 +58,6 @@ class PostDetails extends Component {
                     links[i] = decodeURIComponent(links[i]);
                 }
                 post.links = links;
-                console.log(post);
                 this.setState({
                     post: post
                 });
@@ -75,8 +73,7 @@ class PostDetails extends Component {
         this.props.fetchPost(
             this.props.match.params.id,
             (post)=>{                    
-                alertifyService.success('Fetched post '+this.props.match.params.id+' successfully!');     
-                console.log(post);
+                alertifyService.success('Fetched post '+this.props.match.params.id+' successfully!');
 
                 post.tags = post.tags;
                 let links = post.links.split(',');
@@ -84,7 +81,6 @@ class PostDetails extends Component {
                     links[i] = decodeURIComponent(links[i]);
                 }
                 post.links = links;
-                console.log(post);
                 this.setState({
                     post: post
                 });
@@ -97,7 +93,6 @@ class PostDetails extends Component {
     }
 
     onClickLikeButton(event){
-        console.log("PostDetailsComponent.onClickLikeButton");
 
         if(!this.isPostLiked()){
             this.props.likePost(
@@ -129,12 +124,10 @@ class PostDetails extends Component {
     }
 
     isPostLiked(){
-        console.log(this.state.post);
         return this.state.post!=null&&this.state.post.likers.findIndex(p=>p.likerId == this.props.authUser.id)!=-1;
     }
 
     isPostDisliked(){
-        console.log(this.state.post);
         return this.state.post!=null&&this.state.post.dislikers.findIndex(p=>p.dislikerId == this.props.authUser.id)!=-1;
     }
 
@@ -192,13 +185,12 @@ class PostDetails extends Component {
                 thumbnail: postImage.url
             };
         }):null;
-        console.log(postImages);
         
         return(
-            <div className="container mt-4 post-details-component">
-                <h1 className="mb-4 text-left">
+            <div className="container mt-4 pt-3 mb-4 post-details-component">
+                {/* <h1 className="mb-4 text-left">
                     Post Details
-                </h1>
+                </h1> */}
                 {/* <div className="row">
                     <h1>
                         {this.state.post? this.state.post.knownAs: ''}'s Profile
@@ -291,44 +283,50 @@ class PostDetails extends Component {
                     <div className="col-md-9">
                         <div className="card">
                             <div className="card-body">
-                           
+
                                     <div className="row text-left">
-                                        <label className="col-lg-2 col-md-3 font-weight-bold ">Title</label>
+                                       
+                                        {/* <label className="col-lg-2 col-md-3 font-weight-bold ">Title</label> */}
                                         <div className="col-sm">
-                                            <p>{this.state.post?this.state.post.title:''}</p>
+                                            <h2>{this.state.post?this.state.post.title:''}</h2>
+                                            {/* <p>{this.state.post?this.state.post.title:''}</p> */}
                                         </div>
                                     </div>
-                                    <div className="row text-left ">
-                                        <label className="col-lg-2 col-md-3 font-weight-bold">Description</label>
-                                        <div className="col-sm">
-                                            <p>
-                                            {this.state.post?this.state.post.description:''}
-                                            </p>
-                                        </div>
-                                    </div>
-                                    <div className="row text-left ">
-                                        <label className="col-lg-2 col-md-3 font-weight-bold">Category</label>
+                                   
+                                    <div className="row text-left mb-2">
+                                        {/* <label className="col-lg-2 col-md-3 font-weight-bold">Category</label> */}
                                         <div className="col-sm col-lg-4 col-md-6">
-                                            <p>
-                                            {this.state.post?this.state.post.category.toUpperCase():''}
-                                            </p>
+                                            <strong className="mr-1">Category: </strong> {this.state.post?this.state.post.category.toUpperCase():''}
+                                            {/* <p>
+                                           
+                                            </p> */}
                                         </div>
                                     </div>
-                                    <div className="row text-left ">
-                                        <label className="col-lg-2 col-md-3 font-weight-bold">Tags</label>
+                                    <div className="row text-left mb-4">
+                                        {/* <label className="col-lg-2 col-md-3 font-weight-bold">Tags</label> */}
                                         <div className="col-sm">
+                                            <strong className="mr-1">Tags: </strong>
                                             {
                                                 this.state.post?
-                                                this.state.post.tags.map((tag, index)=>{
-                                                    return(
-                                                        <span key={index} className="mr-2">{tag}</span>
-                                                    );
-                                                })
+                                                this.state.post.tags.join(", ")
+                                                // this.state.post.tags.map((tag, index)=>{
+                                                //     return(
+                                                //         <span key={index} className="mr-2">{tag}</span>
+                                                //     );
+                                                // })
                                                 :null
                                             }
                                         </div>
                                     </div>
-                                    <div className="row text-left ">
+                                     <div className="row text-left mb-4">
+                                        <label className="col-12 font-weight-bold">Description</label>
+                                        <div className="col-sm">
+                                            <p className="bg-light px-3 py-3">
+                                            {this.state.post?this.state.post.description:''}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div className="row text-left mb-5">
                                         <label className="col-lg-2 col-md-3 font-weight-bold">Links</label>
                                         <div className="col-sm-10">
                                             {

@@ -299,11 +299,12 @@ namespace BestCSStudy.API.Controllers
                     };
 
                     _repo.Add(tag);
+                    await _repo.SaveAll();
                 }
                 
                 var postTag = new PostTag {
-                    PostId = tag.Id,
-                    TagId = postFromRepo.Id
+                    PostId = postFromRepo.Id,
+                    TagId = tag.Id
                 };
                 
                 postFromRepo.Tags.Add(postTag);

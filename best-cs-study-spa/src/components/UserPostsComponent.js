@@ -344,7 +344,7 @@ class UserPosts extends Component {
                                                     <strong className="font-weight-bold">Category: </strong> {post.category.toUpperCase()}
                                                 </div>
                                                 <div className="mb-3">
-                                                    <strong className="font-weight-bold">Tags: </strong> {post.tags.split("|").join(", ")}
+                                                    <strong className="font-weight-bold">Tags: </strong> {post.tags.join(", ")}
                                                 </div>
                                               
                                                

@@ -925,7 +925,7 @@ export const uploadPostImage = (file, onSuccess, onError) => (dispatch) => {
     })
 };
 
-export const createPost = (title, description, category, tags, links, images, mainImage, onSuccess, onError) => (dispatch) => {
+export const createPost = (title, description, category, tags, links, images, mainImage, onSuccess, onError) => (dispatch, getState) => {
     console.log(mainImage);
     let formData = new FormData();
     formData.append('title', title);
@@ -950,6 +950,7 @@ export const createPost = (title, description, category, tags, links, images, ma
             if(response.ok){
                 response.json()
                 .then(responseBodyJson=>{
+
                     if(onSuccess){
                         onSuccess(responseBodyJson);
                     }
@@ -978,7 +979,7 @@ export const createPost = (title, description, category, tags, links, images, ma
     })
 };
 
-export const updatePost = (postId, title, description, category, tags, links, deletedImages, addedImages, mainImage, onSuccess, onError) => (dispatch) => {
+export const updatePost = (postId, title, description, category, tags, links, deletedImages, addedImages, mainImage, onSuccess, onError) => (dispatch, getState) => {
     let formData = new FormData();
     formData.append('title', title);
     formData.append('description', description);
@@ -1379,6 +1380,54 @@ export const fetchUserPosts = (userId, pageNumber, pageSize, postParams,
     })
     .catch(error => {
         // dispatch(postsFailed(error.message));
+        if(onError){
+            onError(error);
+        }
+    });
+}
+
+export const fetchTags = (tagParams, onSuccess, onError) => (dispatch) => {
+    let params = {};
+
+    if(tagParams!=null){
+        if(tagParams.orderBy != null) params['orderBy']=tagParams.orderBy;
+        if(tagParams.maxReturnNumber != null) params['maxReturnNumber']=tagParams.maxReturnNumber;
+        if(tagParams.minCount != null) params['minCount']=tagParams.minCount;
+    }
+
+    let query = Object.keys(params)
+        .map(k => k + '=' + params[k])
+        .join('&');
+
+    return fetch(baseUrl + 'tags?' + query)
+    .then(response => {
+
+        if(response.ok){
+            response.json()
+            .then(tags => {
+                if(onSuccess){
+                    onSuccess(tags);
+                }
+            })
+            .catch(error=>{
+                if(onError){
+                    onError(error);
+                }
+            });
+
+        } else {
+            handleFetchResponseNotOkError(response,
+            error=>{
+                if(onError){
+                    onError(error);
+                }
+            });
+        }
+    },
+    error => {
+        throw error;
+    })
+    .catch(error => {
         if(onError){
             onError(error);
         }

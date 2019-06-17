@@ -80,6 +80,14 @@ namespace BestCSStudy.API.Helpers
                 })
                 .ForMember(dest=>dest.Dislikers, opt=>{
                     opt.MapFrom(d=>d.Dislikers.Select(u=>u.DislikerId));
+                })
+                .ForMember(dest=>dest.Tags, opt=>{
+                    opt.MapFrom(d=>d.Tags.Select(t=>t.Tag.Value));
+                });
+            
+            CreateMap<Tag, TagToReturnDto>()
+                .ForMember(dest=>dest.Count, opt=>{
+                    opt.MapFrom(src=>src.Posts.Count);
                 });
         }
     }

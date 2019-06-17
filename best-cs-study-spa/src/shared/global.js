@@ -74,4 +74,14 @@ export const genderOptions = [
     {value:'female', display:'Female'}
 ];
 
+export const defaultTags =[
+    "game development",
+    "web development",
+    "virtual reality",
+    "augmented reality",
+    "machine learning",
+    "deep learning",
+    "data structure"
+];
+
 export const defaultDatetimeValue = -62135571604000;

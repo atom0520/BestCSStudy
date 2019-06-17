@@ -1,5 +1,5 @@
 import React, { Component, useCallback } from 'react'
-import {createPost } from '../redux/ActionCreators';
+import {createPost, fetchAuthUser } from '../redux/ActionCreators';
 import { alertifyService } from '../services/AlertifyService';
 import { connect } from 'react-redux';
 import { postCategoryOptions } from "../shared/global";
@@ -25,10 +25,12 @@ function states () {
 
 const mapStateToProps = state => {
     return {
+        authUser: state.auth.user
     }
 }
 
 const mapDispatchToProps = dispatch => ({
+    fetchAuthUser: (id, onSuccess, onError) => { dispatch(fetchAuthUser(id, onSuccess, onError)) },
     createPost: (title, description, category, tags, links, images, mainImage, onSuccess, onError) => { dispatch(createPost(title, description, category, tags, links, images, mainImage, onSuccess, onError)) }
 });
 
@@ -71,6 +73,14 @@ class CreatePost extends Component {
                 console.log(post);
                 alertifyService.success("Created post successfully!");
                 this.props.history.push(`/posts/${post.id}`);
+                this.props.fetchAuthUser(this.props.authUser.id,
+                    (user)=>{
+                        alertifyService.success("Fetched auth user successfully!");
+                        
+                    },
+                    (error)=>{
+                        alertifyService.error(error.message);
+                    });
             },
             (error)=>{
                 alertifyService.error(error.message);

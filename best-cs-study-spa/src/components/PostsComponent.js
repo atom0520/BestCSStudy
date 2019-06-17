@@ -188,14 +188,12 @@ class Posts extends Component {
     }
 
     loadPosts(pageIndex){
-        console.log('PostsComponent.loadPosts',this.state.postParams);
         this.props.fetchPosts(
             pageIndex,
             this.state.pagination.itemsPerPage,
             this.state.postParams,
             (posts, pagination)=>{
                 alertifyService.success('Fetched posts successfully!');
-                console.log(posts);
 
                 this.setState({
                     posts: posts,
@@ -213,7 +211,6 @@ class Posts extends Component {
         const target = event.target;
         const value = target.value;
         const name = target.name;
-        console.log(name,value);
 
         this.setState({
             postParams: {...this.state.postParams, 
@@ -344,7 +341,7 @@ class Posts extends Component {
                                                     <strong className="font-weight-bold">Category: </strong> {post.category.toUpperCase()}
                                                 </div>
                                                 <div className="mb-3">
-                                                    <strong className="font-weight-bold">Tags: </strong> {post.tags.split("|").join(", ")}
+                                                    <strong className="font-weight-bold">Tags: </strong> {post.tags.join(", ")}
                                                 </div>
                                               
                                                 <div className="mb-5">{post.description}</div>

@@ -1,7 +1,21 @@
 import React, { Component } from 'react';
-import { postCategoryOptions } from "../shared/global";
+import { postCategoryOptions, defaultTags } from "../shared/global";
 import styles from "./HomeComponent.module.scss";
 import { withRouter } from 'react-router-dom';
+import { fetchTags } from '../redux/ActionCreators';
+import { connect } from 'react-redux';
+import { alertifyService } from '../services/AlertifyService';
+
+const mapStateToProps = state => {
+    return {
+    
+    }
+}
+
+const mapDispatchToProps = dispatch => ({
+    fetchTags: (tagParams, onSuccess, onError) => { dispatch(fetchTags(tagParams, onSuccess, onError)) }
+});
+
 
 class Home extends Component {
 
@@ -13,7 +27,7 @@ class Home extends Component {
                 search: ""
             },
 
-            trendingTags:["Game Development", "Game Development","Game Development","Game Development","Game Development","Game Development","Machine Learning", "Web Development", "Virtual Reality", "Augmented Reality"]
+            trendingTags:defaultTags
         };
 
         this.onClickTagButton = this.onClickTagButton.bind(this);
@@ -34,6 +48,41 @@ class Home extends Component {
     //         registerMode: false 
     //     });
     // }
+    componentDidMount(){
+        setTimeout(this.props.fetchTags(
+            {
+                orderBy:"count",
+                maxReturnNumber: 20,
+                minCount: 2
+            },
+            (tags)=>{                    
+                alertifyService.success('Fetched trending tags successfully!'); 
+                console.log(tags);
+                tags = tags.map(tag=>{ return tag.value});
+
+                let trendingTags = this.state.trendingTags;
+                for(let i=0; i<tags.length; i++){
+                    let tag = tags[i];
+                    if(trendingTags.indexOf(tag)==-1){
+                        trendingTags.push(tag);
+
+                        if(trendingTags.length>=20){
+                            break;
+                        }
+                    }
+                }
+
+                this.setState({
+                    trendingTags: trendingTags
+                });
+            },
+            (error)=>{
+
+                alertifyService.error(error.message);
+            }
+        ),1);
+    }
+
     handleInputChangePostParamsForm(event){
 
         const target = event.target;
@@ -155,4 +204,4 @@ class Home extends Component {
   
 };
 
-export default withRouter(Home);
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Home));

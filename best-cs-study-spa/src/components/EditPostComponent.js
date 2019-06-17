@@ -67,7 +67,7 @@ class EditPost extends Component {
             (post)=>{                    
                 alertifyService.success('Fetched post '+this.props.match.params.id+' successfully!');     
 
-                post.tags = post.tags.split('|');
+                // post.tags = post.tags.split('|');
                 let links = post.links.split(',');
                 for(let i=0;i<links.length; i++){
                     links[i] = decodeURIComponent(links[i]);

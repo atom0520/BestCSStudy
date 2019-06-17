@@ -13,6 +13,7 @@ namespace BestCSStudy.API.Data
          Task<PagedList<User>> GetUsers(UserParams userParams);
          Task<PagedList<Post>> GetPosts(PostParams postParams);
          Task<Post> GetPost(int id);
+         Task<IEnumerable<Tag>> GetTags(TagParams tags);
          Task<Tag> GetTag(string value);
          Task<User> GetUser(int id);
          Task<Photo> GetPhoto(int id);
