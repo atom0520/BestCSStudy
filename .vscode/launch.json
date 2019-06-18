@@ -9,7 +9,7 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            "program": "${workspaceFolder}/BestCSStudy.API/bin/Debug/netcoreapp2.2/BestCSStudy.API.dll",
+            "program": "${workspaceFolder}/BestCSStudy.API/bin/Debug/netcoreapp2.2/win10-x64/BestCSStudy.API.exe",
             "args": [],
             "cwd": "${workspaceFolder}/BestCSStudy.API",
             "stopAtEntry": false,
