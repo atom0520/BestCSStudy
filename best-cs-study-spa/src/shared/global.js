@@ -1,3 +1,5 @@
+import { debug } from './config';
+
 export const handleFetchResponseNotOkError = (response, onError) => {
     if(response.status == '401'){
         onError(new Error(response.statusText));
@@ -75,13 +77,20 @@ export const genderOptions = [
 ];
 
 export const defaultTags =[
-    "game development",
     "web development",
-    "virtual reality",
-    "augmented reality",
     "machine learning",
     "deep learning",
+    "game development",
+    "virtual reality",
+    "augmented reality",
     "data structure"
 ];
 
 export const defaultDatetimeValue = -62135571604000;
+
+if (!debug) {
+    console = console || {};
+    console.log = function(){};
+}
+
+export const maxPostListDescriptionDisplayLength = 200;

@@ -75,7 +75,7 @@ export const Auth = (state = initAuthState(), action) => {
             };
         case ActionTypes.SET_USER_MAIN_PHOTO_URL:
             return {...state,
-                user: {...state.user, photoUrl: action.url}
+                user: {...state.user, mainPhotoUrl: action.url}
             };
         case ActionTypes.ADD_AUTH_USER:
             return {...state,

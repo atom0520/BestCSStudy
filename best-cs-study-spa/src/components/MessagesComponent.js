@@ -52,7 +52,7 @@ class Messages extends Component {
             this.state.messageContainer,
             (messages, pagination)=>{
             
-                alertifyService.success('Fetched messages successfully!');
+                // alertifyService.success('Fetched messages successfully!');
                 
                 this.setState({
                     messages: messages,
@@ -91,10 +91,10 @@ class Messages extends Component {
                         //     messages:messages
                         // });
                         this.loadMessages(this.state.pagination.currentPage);
-                        alertifyService.success('Message has been deleted');
+                        // alertifyService.success('Message has been deleted');
                     },
                     (error)=>{
-                        alertifyService.success(error.message);
+                        alertifyService.error(error.message);
                     });
             });
     }

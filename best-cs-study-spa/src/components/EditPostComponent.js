@@ -65,15 +65,14 @@ class EditPost extends Component {
         setTimeout(this.props.fetchPost(
             this.props.match.params.id,
             (post)=>{                    
-                alertifyService.success('Fetched post '+this.props.match.params.id+' successfully!');     
+                // alertifyService.success('Fetched post '+this.props.match.params.id+' successfully!');     
 
-                // post.tags = post.tags.split('|');
                 let links = post.links.split(',');
                 for(let i=0;i<links.length; i++){
                     links[i] = decodeURIComponent(links[i]);
                 }
                 post.links = links;
-                console.log(post);
+ 
                 this.setState({
                     post: post
                 });
@@ -98,7 +97,6 @@ class EditPost extends Component {
         images,
         mainImage
     ){
-        console.log("EditPostComponent",title,description,category,tags,encodedLinks,images,mainImage);
         
         let deletedImages = [];
         let addedImages = [];
@@ -126,8 +124,6 @@ class EditPost extends Component {
             mainImage = -images[mainImage].id;
         }
 
-        console.log("updatePost",deletedImages,addedImages,mainImage);
-
         this.props.updatePost(
             this.props.match.params.id,
             title,
@@ -139,7 +135,7 @@ class EditPost extends Component {
             addedImages,
             mainImage,
             (user)=>{
-                alertifyService.success("Updated post successfully!");
+                // alertifyService.success("Updated post successfully!");
                 this.props.history.push(`/posts/${this.props.match.params.id}`);
             },
             (error)=>{

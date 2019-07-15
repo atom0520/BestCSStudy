@@ -43,7 +43,7 @@ class MemberMessages extends Component {
             this.props.authUser.id,
             this.props.recipientId,
             (messages)=>{
-                alertifyService.success(`Fetched message thread successfully!`);
+                // alertifyService.success(`Fetched message thread successfully!`);
                 
                 this.setState({
                     messages: messages
@@ -55,7 +55,7 @@ class MemberMessages extends Component {
                     {
                         this.props.markMessageAsRead(this.props.authUser.id, messages[i].id,
                             ()=>{
-                                alertifyService.success(`Marked message ${messages[i].id} as read successfully!`);
+                                // alertifyService.success(`Marked message ${messages[i].id} as read successfully!`);
                             },
                             (error)=>{
                                 alertifyService.error(error.message);
@@ -73,8 +73,6 @@ class MemberMessages extends Component {
         const target = event.target;
         const value = target.value;
         const name = target.name;
-
-        // console.log(this.state.loginForm);
 
         this.setState({
             newMessage: {...this.state.newMessage, 
@@ -104,7 +102,7 @@ class MemberMessages extends Component {
                         newMessage:{content:''}
                     });
     
-                    alertifyService.success(`Sent message successfully!`);
+                    // alertifyService.success(`Sent message successfully!`);
                 },
                 (error)=>{
                     alertifyService.error(error.message);

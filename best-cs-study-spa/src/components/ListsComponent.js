@@ -46,7 +46,7 @@ class Lists extends Component {
             this.state.userParams,
             (users, pagination)=>{
             
-                alertifyService.success('Fetched users successfully!');
+                // alertifyService.success('Fetched users successfully!');
                 
                 this.setState({
                     users: users,
@@ -86,7 +86,7 @@ class Lists extends Component {
     handleClickLikeUserButton(recipient){
         this.props.sendLike(this.props.authUser.id, recipient.id,
             ()=>{
-                alertifyService.success(`You have liked ${recipient.knownAs}!`);
+                // alertifyService.success(`You have liked ${recipient.knownAs}!`);
             },
             (error)=>{
                 alertifyService.error(error.message);

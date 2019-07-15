@@ -27,11 +27,6 @@ class Header extends Component {
         super(props);
 
         this.state = {
-            modal: {
-                show: false,
-                type: ''
-            }
-           
         };
 
         this.handleClickEditProfileLink = this.handleClickEditProfileLink.bind(this);
@@ -43,10 +38,10 @@ class Header extends Component {
         if(this.props.auth.isAuthenticated){
             this.props.fetchAuthUser(this.props.auth.user.id,
                 (user)=>{
-                    alertifyService.success('Fetched auth user successfully!');
+                    // alertifyService.success('Fetched auth user successfully!');
                 },
-                err=>{
-                    alertifyService.success('Failed to fetch auth user!');
+                error=>{
+                    alertifyService.error(error.message);
                 });
         }
     }
@@ -54,8 +49,7 @@ class Header extends Component {
     handleClickLogoutLink(event){
         this.props.logoutUser(
             ()=>{
-                alertifyService.message('Logged out successfully!');
-                // this.props.history.push('/home');
+                // alertifyService.message('Logged out successfully!');
             }
         );
     }
@@ -64,22 +58,7 @@ class Header extends Component {
         this.props.history.push("/member/edit");
     }
 
-    // showModal(type){
-    //     this.setState({
-    //         modal: {...this.state.modal, show:true, type:type}
-    //     });
-    // }
-
-    // hideModal(){
-    //     console.log("HeaderComponent.hideModal");
-    //     this.setState({
-    //         modal: {...this.state.modal, show:false}
-    //     });
-    // }
-
     render() {
-
-        // let {errorsLoginForm, validLoginForm} = this.validateLoginForm();
 
         return(
             <nav className="navbar navbar-expand-md navbar-dark bg-primary">
@@ -148,30 +127,6 @@ class Header extends Component {
                             : null
                         }
                 </div>
-
-
-                {/* <Modal
-                    show={this.state.modal.show}
-                    onHide={this.hideModal}
-                    animation={true}
-                    backdrop={'static'}
-                    centered
-                    scrollable={true}
-                >
-                    <Modal.Body className="mx-4">
-                        {
-                            this.state.modal.type=='login'?
-                            <Login close={this.hideModal}/>
-                            :null
-                        }
-                        {
-                            this.state.modal.type=='register'?
-                            <Register close={this.hideModal}/>
-                            : null
-                        }
-                       
-                    </Modal.Body>
-                </Modal> */}
             </nav>
         );
     };

@@ -137,8 +137,13 @@ namespace BestCSStudy.API.Controllers
 
             var photoFromRepo = await _repo.GetPhoto(id);
 
-            if (photoFromRepo.IsMain)
-                return BadRequest("You cannot delete your main photo");
+            if (photoFromRepo.IsMain){
+                if(user.Photos.Count>1){
+                   var newMainPhoto = user.Photos.FirstOrDefault(p=>p.Id != id);
+                   newMainPhoto.IsMain = true;
+                }
+            }
+                // return BadRequest("You cannot delete your main photo");
             
             if (photoFromRepo.PublicId != null)
             {

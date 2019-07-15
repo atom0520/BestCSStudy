@@ -96,13 +96,12 @@ class MemberList extends Component {
     }
 
     loadUsers(pageIndex){
-        console.log('MemberListComponent.loadUsers',this.state.userParams);
         this.props.fetchUsers(
             pageIndex,
             this.state.pagination.itemsPerPage,
             this.state.userParams,
             (users, pagination)=>{
-                alertifyService.success('Fetched users successfully!');
+                // alertifyService.success('Fetched users successfully!');
                 
                 this.setState({
                     pagination:pagination
@@ -115,18 +114,13 @@ class MemberList extends Component {
     }
 
     handleChangePage(pageIndex){
-        console.log('MemeberListComponent.handleChangePage', pageIndex);
-        // this.setState({
-        //     pagination: {...this.state.pagination, currentPage:pageIndex}
-        // });
-        
         this.loadUsers(pageIndex);
     }
 
     handleClickLikeUserButton(recipient){
         this.props.sendLike(this.props.authUser.id, recipient.id,
             ()=>{
-                alertifyService.success(`You have liked ${recipient.knownAs}!`);
+                // alertifyService.success(`You have liked ${recipient.knownAs}!`);
             },
             (error)=>{
                 alertifyService.error(error.message);

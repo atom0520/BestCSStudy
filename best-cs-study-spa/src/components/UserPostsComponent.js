@@ -6,6 +6,7 @@ import { connect } from 'react-redux';
 import { postCategoryOptions } from "../shared/global";
 import styles from './PostsComponent.module.scss';
 import { withRouter } from 'react-router-dom';
+import { maxPostListDescriptionDisplayLength } from '../shared/global';
 
 const mapStateToProps = state => {
     return {
@@ -70,14 +71,12 @@ class UserPosts extends Component {
     }
 
     handleLikePost(postIndex){
-        console.log("PostsComponent.handleLikePost",postIndex);
-        
         if(!this.isPostLiked(postIndex)){
             this.props.likePost(
                 this.props.authUser.id,
                 this.state.posts[postIndex].id,
                 (res)=>{
-                    alertifyService.success('Liked post successfully!');
+                    // alertifyService.success('Liked post successfully!');
                     let posts = this.state.posts;
                     posts[postIndex].likers.push(this.props.authUser.id);
 
@@ -99,7 +98,7 @@ class UserPosts extends Component {
                 this.props.authUser.id,
                 this.state.posts[postIndex].id,
                 (res)=>{
-                    alertifyService.success('Cancel liked post successfully!');
+                    // alertifyService.success('Cancel liked post successfully!');
                     let posts = this.state.posts;
                     
                     let authUserLikerIndex = this.state.posts[postIndex].likers.indexOf(this.props.authUser.id);
@@ -124,14 +123,13 @@ class UserPosts extends Component {
     }
 
     handleDislikePost(postIndex){
-        console.log("PostsComponent.handleDislikePost",postIndex);
 
         if(!this.isPostDisliked(postIndex)){
             this.props.dislikePost(
                 this.props.authUser.id,
                 this.state.posts[postIndex].id,
                 (res)=>{
-                    alertifyService.success('Disliked post successfully!');
+                    // alertifyService.success('Disliked post successfully!');
 
                     let posts = this.state.posts;
                     posts[postIndex].dislikers.push(this.props.authUser.id);
@@ -155,7 +153,7 @@ class UserPosts extends Component {
                 this.state.posts[postIndex].id,
                 (res)=>{
                 
-                    alertifyService.success('Cancel disliked post successfully!');
+                    // alertifyService.success('Cancel disliked post successfully!');
                     let posts = this.state.posts;
                     let authUserDislikerIndex = this.state.posts[postIndex].dislikers.indexOf(this.props.authUser.id);
                     if(authUserDislikerIndex!=-1){
@@ -181,15 +179,13 @@ class UserPosts extends Component {
     }
 
     loadPosts(pageIndex){
-        console.log('UserPostsComponent.loadPosts',this.state.postParams);
         this.props.fetchUserPosts(
             this.props.match.params.id,
             pageIndex,
             this.state.pagination.itemsPerPage,
             this.state.postParams,
             (posts, pagination)=>{
-                alertifyService.success('Fetched posts successfully!');
-                console.log(posts);
+                // alertifyService.success('Fetched posts successfully!');
 
                 this.setState({
                     posts: posts,
@@ -207,7 +203,6 @@ class UserPosts extends Component {
         const target = event.target;
         const value = target.value;
         const name = target.name;
-        console.log(name,value);
 
         this.setState({
             postParams: {...this.state.postParams, 
@@ -348,7 +343,7 @@ class UserPosts extends Component {
                                                 </div>
                                               
                                                
-                                                <div className="mb-5">{post.description}</div>
+                                                <div className={"mb-4 "}>{post.description.length<=maxPostListDescriptionDisplayLength?post.description.length:(post.description.substring(0,maxPostListDescriptionDisplayLength)+"...")}</div>
                                                 <div className={"row text-left"} >
                                                     <div className="col">
                                                         <button className={"btn mr-2 "+(post.likers.includes(this.props.authUser.id)?"btn-success":"btn-secondary")}

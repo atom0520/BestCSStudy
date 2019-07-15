@@ -140,7 +140,7 @@ class Login extends Component {
                 password:this.state.form.fields.password.value
             },
             ()=>{
-                alertifyService.success('Logged in successfully!');
+                // alertifyService.success('Logged in successfully!');
                 // this.props.history.push('/posts');
                 this.props.close();                
             },

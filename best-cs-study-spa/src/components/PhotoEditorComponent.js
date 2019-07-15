@@ -2,7 +2,7 @@ import React, { Component, useMemo, useCallback } from 'react'
 import styles from './PhotoEditorComponent.module.scss';
 import Dropzone, {useDropzone} from 'react-dropzone';
 import { connect } from 'react-redux';
-import { uploadUserPhoto, setUserMainPhoto, deleteUserPhoto, setUserMainPhotoUrl } from '../redux/ActionCreators';
+import { uploadUserPhoto, setUserMainPhoto, deleteUserPhoto, setUserMainPhotoUrl, fetchAuthUser } from '../redux/ActionCreators';
 import { alertifyService } from '../services/AlertifyService';
 import { Loading } from './LoadingComponent';
 import PhotoUploader from './PhotoUploaderComponent';
@@ -109,6 +109,7 @@ const mapDispatchToProps = dispatch => ({
   uploadUserPhoto: (userId, file, onSuccess, onError) => { dispatch(uploadUserPhoto(userId, file, onSuccess, onError)) },
   setUserMainPhoto: (userId, photoId, onSuccess, onError) => { dispatch(setUserMainPhoto(userId, photoId, onSuccess, onError)) },
   setUserMainPhotoUrl: (url) => { dispatch(setUserMainPhotoUrl(url)) },
+  fetchAuthUser: (id, onSuccess, onError) => { dispatch(fetchAuthUser(id, onSuccess, onError)) },
   deleteUserPhoto: (userId, photoId, onSuccess, onError) => { dispatch(deleteUserPhoto(userId, photoId, onSuccess, onError)) }
 });
 
@@ -148,16 +149,20 @@ class PhotoEditor extends Component {
             isMain: res.isMain
           };
 
-          console.log(photo);
           this.props.handleUploadedPhoto(photo);
 
           if(photo.isMain){
             this.props.handleSetMainPhoto(photo.id);
-            this.props.setUserMainPhotoUrl(photo.url);
+            this.props.fetchAuthUser(this.props.auth.decodedToken.nameid, 
+              ()=>{},
+              (error)=>{
+                alertifyService.error(error.message);
+              });
+            // this.props.setUserMainPhotoUrl(photo.url);
           }
 
           this.handleRemoveFile(index);
-          alertifyService.success(`Uploaded file ${file.path} successfully!`);
+          // alertifyService.success(`Uploaded file ${file.path} successfully!`);
           this.setState({isUploadingPhoto: false});
         },
         (error)=>{
@@ -167,7 +172,7 @@ class PhotoEditor extends Component {
     });
 
     handleRemoveFile = (index=>{
-      console.log("PhotoEditor.handleRemoveFile", index);
+
       var files = [...this.state.files];
       files.splice(index,1);
       this.setState({files: files})
@@ -178,8 +183,13 @@ class PhotoEditor extends Component {
         ()=>{
 
           this.props.handleSetMainPhoto(photoId);
-
-          alertifyService.success(`Set photo ${photoId} as main photo successfully!`);
+          
+          this.props.fetchAuthUser(this.props.auth.decodedToken.nameid, 
+            ()=>{},
+            (error)=>{
+              alertifyService.error(error.message);
+            });
+          // alertifyService.success(`Set photo ${photoId} as main photo successfully!`);
         },
         (error)=>{
           alertifyService.error(error.message);
@@ -191,8 +201,12 @@ class PhotoEditor extends Component {
         this.props.deleteUserPhoto(this.props.auth.decodedToken.nameid, photoId,
           ()=>{
             this.props.handleDeletedPhoto(photoId);
-            alertifyService.success(`Deleted photo ${photoId} successfully!`);
-
+            // alertifyService.success(`Deleted photo ${photoId} successfully!`);
+            this.props.fetchAuthUser(this.props.auth.decodedToken.nameid, 
+              ()=>{},
+              (error)=>{
+                alertifyService.error(error.message);
+              });
           },
           (error)=>{
             alertifyService.error(error.message);

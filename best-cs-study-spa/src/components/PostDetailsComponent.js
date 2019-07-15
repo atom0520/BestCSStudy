@@ -15,6 +15,7 @@ import './PostDetailsComponent.css';
 import ImgUser from '../shared/img/user.png';
 import styles from './PostDetailsComponent.module.scss';
 import { Link } from 'react-router-dom';
+import Rating from 'react-rating';
 
 const mapStateToProps = state => {
     return {
@@ -50,7 +51,7 @@ class PostDetails extends Component {
         setTimeout(this.props.fetchPost(
             this.props.match.params.id,
             (post)=>{                    
-                alertifyService.success('Fetched post '+this.props.match.params.id+' successfully!');     
+                // alertifyService.success('Fetched post '+this.props.match.params.id+' successfully!');     
 
                 post.tags = post.tags;
                 let links = post.links.split(',');
@@ -73,7 +74,7 @@ class PostDetails extends Component {
         this.props.fetchPost(
             this.props.match.params.id,
             (post)=>{                    
-                alertifyService.success('Fetched post '+this.props.match.params.id+' successfully!');
+                // alertifyService.success('Fetched post '+this.props.match.params.id+' successfully!');
 
                 post.tags = post.tags;
                 let links = post.links.split(',');
@@ -100,7 +101,7 @@ class PostDetails extends Component {
                 this.props.match.params.id,
                 (res)=>{
                 
-                    alertifyService.success('Liked post successfully!');
+                    // alertifyService.success('Liked post successfully!');
                     this.fetchPost();
                 },
                 (error)=>{
@@ -113,7 +114,7 @@ class PostDetails extends Component {
                 this.props.match.params.id,
                 (res)=>{
                 
-                    alertifyService.success('Cancel liked post successfully!');
+                    // alertifyService.success('Cancel liked post successfully!');
                     this.fetchPost();
                 },
                 (error)=>{
@@ -132,14 +133,12 @@ class PostDetails extends Component {
     }
 
     onClickDislikeButton(event){
-        console.log("PostDetailsComponent.onClickDislikeButton");
-
         if(!this.isPostDisliked()){
             this.props.dislikePost(
                 this.props.authUser.id,
                 this.props.match.params.id,
                 (res)=>{
-                    alertifyService.success('Disliked post successfully!');
+                    // alertifyService.success('Disliked post successfully!');
                     this.fetchPost();
                 },
                 (error)=>{
@@ -152,7 +151,7 @@ class PostDetails extends Component {
                 this.props.match.params.id,
                 (res)=>{
                 
-                    alertifyService.success('Cancel disliked post successfully!');
+                    // alertifyService.success('Cancel disliked post successfully!');
                     this.fetchPost();
                 },
                 (error)=>{
@@ -201,7 +200,7 @@ class PostDetails extends Component {
                         <div className="card">
                             <div className="card-body">
                                 <div className="text-left">
-                                    <strong>Author:</strong>
+                                    <strong>Posted By:</strong>
                                     <p>
                                     {
                                         this.state.post?
@@ -239,7 +238,7 @@ class PostDetails extends Component {
                                     }
                                     </p>
                                 </div>
-                                <div className="text-left">
+                                {/* <div className="text-left">
                                     <strong><i className="far fa-thumbs-up"></i> Likes:</strong>
                                     <p>
                                     {
@@ -258,12 +257,25 @@ class PostDetails extends Component {
                                         :''
                                     }
                                     </p>
+                                </div> */}
+                                <div className="text-left mb-2">
+                                    <strong>Rating:</strong>
+                                    <div className="mt-1">
+                                    <Rating 
+                                        emptySymbol={<span className="far fa-star fa-md" style={{color:"#ffcc00"}}></span>}
+                                        fullSymbol={<span className="fas fa-star fa-md" style={{color:"#ffcc00"}}></span>}
+                                        initialRating={3.9}
+                                        fractions={10}
+                                        readonly
+                                    />
+                                    <span className="ml-2">3.9 (19,298 ratings)</span>
+                                    </div>
                                 </div>
                             </div>
                             {
                                 this.props.isAuthenticated?
                                 <div className="card-footer ">
-                                    <button className={"btn mx-1 "+
+                                    {/* <button className={"btn mx-1 "+
                                     (this.isPostLiked()?"btn-success":"btn-outline-secondary")}
                                         onClick={this.onClickLikeButton}
                                     >
@@ -273,7 +285,20 @@ class PostDetails extends Component {
                                     (this.isPostDisliked()?"btn-danger":"btn-outline-secondary")}
                                         onClick={this.onClickDislikeButton}
                                     >
-                                    <i className="far fa-thumbs-down"></i> Dislike</button>                           
+                                    <i className="far fa-thumbs-down"></i> Dislike</button>   */}
+
+                                    {/* <button className={"btn btn-block btn-warning"}
+                                                onClick={this.onClickEditButton}
+                                            >
+                                                <i className="fas fa-edit"></i> Edit
+                                     </button>
+                                    <button className={"btn btn-block btn-danger"}
+                                    >
+                                    <i className="fas fa-trash-alt"></i> Delete</button>             */}
+
+                                       <button className={"btn btn-block btn-warning"}
+                                    >
+                                    <i className="fas fa-edit mr-1"></i> Write a Review</button>                
                                 </div>
                                 :null
                             }
@@ -287,8 +312,8 @@ class PostDetails extends Component {
                                     <div className="row text-left">
                                        
                                         {/* <label className="col-lg-2 col-md-3 font-weight-bold ">Title</label> */}
-                                        <div className="col-sm">
-                                            <h2>{this.state.post?this.state.post.title:''}</h2>
+                                        <div className="col-sm ">
+                                            <h2 className="font-weight-bold">{this.state.post?this.state.post.title:''}</h2>
                                             {/* <p>{this.state.post?this.state.post.title:''}</p> */}
                                         </div>
                                     </div>
@@ -302,13 +327,13 @@ class PostDetails extends Component {
                                             </p> */}
                                         </div>
                                     </div>
-                                    <div className="row text-left mb-4">
+                                    <div className="row text-left " style={{marginBottom:"2.2rem"}}>
                                         {/* <label className="col-lg-2 col-md-3 font-weight-bold">Tags</label> */}
                                         <div className="col-sm">
                                             <strong className="mr-1">Tags: </strong>
                                             {
                                                 this.state.post?
-                                                this.state.post.tags.join(", ")
+                                                this.state.post.tags.map(tag=>tag.toTitleCase()).join(", ")
                                                 // this.state.post.tags.map((tag, index)=>{
                                                 //     return(
                                                 //         <span key={index} className="mr-2">{tag}</span>
@@ -319,9 +344,9 @@ class PostDetails extends Component {
                                         </div>
                                     </div>
                                      <div className="row text-left mb-4">
-                                        <label className="col-12 font-weight-bold">Description</label>
+                                        <h4 className="col-12 font-weight-bold">Description</h4>
                                         <div className="col-sm">
-                                            <p className="bg-light px-3 py-3">
+                                            <p className={"bg-light px-3 py-3 "+styles.pDescription}>
                                             {this.state.post?this.state.post.description:''}
                                             </p>
                                         </div>
@@ -333,7 +358,7 @@ class PostDetails extends Component {
                                                 this.state.post?
                                                 this.state.post.links.map((link, index)=>{
                                                     return(
-                                                        <div key={index}>
+                                                        <div className="mb-2" key={index}>
                                                             <a href={link} target="_blank">{link}</a>
                                                         </div>
                                                     );
@@ -351,7 +376,7 @@ class PostDetails extends Component {
                                             </div> */}
                                         </div>
                                     </div>
-                                    <div className="row text-left mt-4">
+                                    <div className="row text-left mb-5">
                                         <label className="col-lg-2 col-md-3 font-weight-bold">Images</label>
                                         <div className="col-sm-8 col-md-6 col-lg-4">
                                         {
@@ -363,7 +388,238 @@ class PostDetails extends Component {
                                             
                                         </div>
                                     </div>
-                                    {
+                                    <div className="row text-left mb-5">
+                                        <h4 className="col-lg-2 col-md-3 font-weight-bold">Ratings</h4>
+                                        <div className="col-12">
+                                            <div className="row py-3">
+                                                <div className="ml-4 col-2 text-center my-auto">
+                                                    <h1 style={{fontSize:"3rem"}}>4.8</h1>
+                                                    <Rating 
+                                                        emptySymbol={<span className="far fa-star fa-lg" style={{color:"#ffcc00"}}></span>}
+                                                        fullSymbol={<span className="fas fa-star fa-lg" style={{color:"#ffcc00"}}></span>}
+                                                        initialRating={4.6}
+                                                        fractions={10}
+                                                        readonly
+                                                    />
+                                                </div>
+                                                <div className="col-9">
+                                                    <div className="row mb-3">
+                                                        <div className="col-9 mt-1 pr-0">
+                                                            <div style={{width:"100%", backgroundColor:"lightGrey", height:"1rem"}}>
+                                                                <div style={{width:"20%", backgroundColor:"grey", height:"1rem", zIndex:"1"}}>
+                                                                
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div className="col pl-3">
+                                                            <Rating 
+                                                                emptySymbol={<span className="far fa-star fa-md" style={{color:"#ffcc00"}}></span>}
+                                                                fullSymbol={<span className="fas fa-star fa-md" style={{color:"#ffcc00"}}></span>}
+                                                                initialRating={5}
+                                                                fractions={10}
+                                                                readonly
+                                                            />
+                                                            <span className="ml-2">75%</span>
+                                                        </div>
+                                                    </div> 
+                                                    <div className="row mb-3">
+                                                        <div className="col-9 mt-1 pr-0">
+                                                            <div style={{width:"100%", backgroundColor:"lightGrey", height:"1rem"}}>
+                                                                <div style={{width:"20%", backgroundColor:"grey", height:"1rem", zIndex:"1"}}>
+                                                                
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div className="col pl-3">
+                                                            <Rating 
+                                                                emptySymbol={<span className="far fa-star fa-md" style={{color:"#ffcc00"}}></span>}
+                                                                fullSymbol={<span className="fas fa-star fa-md" style={{color:"#ffcc00"}}></span>}
+                                                                initialRating={4}
+                                                                fractions={10}
+                                                                readonly
+                                                            />
+                                                            <span className="ml-2">75%</span>
+                                                        </div>
+                                                    </div> 
+                                                    <div className="row mb-3">
+                                                        <div className="col-9 mt-1 pr-0">
+                                                            <div style={{width:"100%", backgroundColor:"lightGrey", height:"1rem"}}>
+                                                                <div style={{width:"20%", backgroundColor:"grey", height:"1rem", zIndex:"1"}}>
+                                                                
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div className="col pl-3">
+                                                            <Rating 
+                                                                emptySymbol={<span className="far fa-star fa-md" style={{color:"#ffcc00"}}></span>}
+                                                                fullSymbol={<span className="fas fa-star fa-md" style={{color:"#ffcc00"}}></span>}
+                                                                initialRating={3}
+                                                                fractions={10}
+                                                                readonly
+                                                            />
+                                                            <span className="ml-2">75%</span>
+                                                        </div>
+                                                    </div> 
+                                                    <div className="row mb-3">
+                                                        <div className="col-9 mt-1 pr-0">
+                                                            <div style={{width:"100%", backgroundColor:"lightGrey", height:"1rem"}}>
+                                                                <div style={{width:"20%", backgroundColor:"grey", height:"1rem", zIndex:"1"}}>
+                                                                
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div className="col pl-3">
+                                                            <Rating 
+                                                                emptySymbol={<span className="far fa-star fa-md" style={{color:"#ffcc00"}}></span>}
+                                                                fullSymbol={<span className="fas fa-star fa-md" style={{color:"#ffcc00"}}></span>}
+                                                                initialRating={2}
+                                                                fractions={10}
+                                                                readonly
+                                                            />
+                                                            <span className="ml-2">75%</span>
+                                                        </div>
+                                                    </div> 
+                                                    <div className="row">
+                                                        <div className="col-9 mt-1 pr-0">
+                                                            <div style={{width:"100%", backgroundColor:"lightGrey", height:"1rem"}}>
+                                                                <div style={{width:"20%", backgroundColor:"grey", height:"1rem", zIndex:"1"}}>
+                                                                
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div className="col pl-3">
+                                                            <Rating 
+                                                                emptySymbol={<span className="far fa-star fa-md" style={{color:"#ffcc00"}}></span>}
+                                                                fullSymbol={<span className="fas fa-star fa-md" style={{color:"#ffcc00"}}></span>}
+                                                                initialRating={1}
+                                                                fractions={10}
+                                                                readonly
+                                                            />
+                                                            <span className="ml-2">75%</span>
+                                                        </div>
+                                                    </div> 
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                    </div>
+                                    <div className="row text-left mb-3">
+                                        <h4 className="col-lg-2 col-md-3 font-weight-bold">Reviews</h4>
+                                        <div className="col-12 px-4 py-3">
+                                            <div className="row border-bottom border-top py-4">
+                                                <div className="col-3">
+                                                    <span className="mr-2">
+                                                        <img className={styles.imgAuthor} src={this.state.post?(this.state.post.author.photoUrl || ImgUser):''} alt=""/>
+                                                    </span>
+                                                    {
+                                                        this.state.post?
+                                                        this.state.post.author.username
+                                                        :null
+                                                    }
+                                                    <p>Posted 15 days ago</p>
+                                                </div>
+                                             
+                                                <div className="col">
+                                                <Rating 
+                                                    emptySymbol={<span className="far fa-star fa-md" style={{color:"#ffcc00"}}></span>}
+                                                    fullSymbol={<span className="fas fa-star fa-md" style={{color:"#ffcc00"}}></span>}
+                                                    initialRating={1}
+                                                    fractions={10}
+                                                    readonly
+                                                />
+                                                <p className="mt-2 mb-3">
+                                                Being C# developer , I started learning IOS development too . From this course I have learn a lot of thing about IOS development.Thank you so much . It was such great experience of learning.
+                                                </p>
+                                                <button className={"btn mr-1 "+
+                                                    (this.isPostLiked()?"btn-success":"btn-outline-secondary")}
+                                                        onClick={this.onClickLikeButton}
+                                                    >
+                                                <i className="far fa-thumbs-up"></i> Like
+                                                </button>
+                                                    <button className={"btn ml-1 "+
+                                                    (this.isPostDisliked()?"btn-danger":"btn-outline-secondary")}
+                                                        onClick={this.onClickDislikeButton}
+                                                    >
+                                                    <i className="far fa-thumbs-down"></i> Dislike</button>   
+                                                </div>
+                                            </div>
+                                            <div className="row border-bottom py-4">
+                                                <div className="col-3">
+                                                    <span className="mr-2">
+                                                        <img className={styles.imgAuthor} src={this.state.post?(this.state.post.author.photoUrl || ImgUser):''} alt=""/>
+                                                    </span>
+                                                    {
+                                                        this.state.post?
+                                                        this.state.post.author.username
+                                                        :null
+                                                    }
+                                                    <p>Posted 15 days ago</p>
+                                                </div>
+                                             
+                                                <div className="col">
+                                                <Rating 
+                                                    emptySymbol={<span className="far fa-star fa-md" style={{color:"#ffcc00"}}></span>}
+                                                    fullSymbol={<span className="fas fa-star fa-md" style={{color:"#ffcc00"}}></span>}
+                                                    initialRating={1}
+                                                    fractions={10}
+                                                    readonly
+                                                />
+                                                <p className="mt-2 mb-3">
+                                                Being C# developer , I started learning IOS development too . From this course I have learn a lot of thing about IOS development.Thank you so much . It was such great experience of learning.
+                                                </p>
+                                                <button className={"btn mr-1 "+
+                                                    (this.isPostLiked()?"btn-success":"btn-outline-secondary")}
+                                                        onClick={this.onClickLikeButton}
+                                                    >
+                                                <i className="far fa-thumbs-up"></i> Like
+                                                </button>
+                                                    <button className={"btn ml-1 "+
+                                                    (this.isPostDisliked()?"btn-danger":"btn-outline-secondary")}
+                                                        onClick={this.onClickDislikeButton}
+                                                    >
+                                                    <i className="far fa-thumbs-down"></i> Dislike</button>   
+                                                </div>
+                                            </div><div className="row border-bottom py-4">
+                                                <div className="col-3">
+                                                    <span className="mr-2">
+                                                        <img className={styles.imgAuthor} src={this.state.post?(this.state.post.author.photoUrl || ImgUser):''} alt=""/>
+                                                    </span>
+                                                    {
+                                                        this.state.post?
+                                                        this.state.post.author.username
+                                                        :null
+                                                    }
+                                                    <p>Posted 15 days ago</p>
+                                                </div>
+                                             
+                                                <div className="col">
+                                                <Rating 
+                                                    emptySymbol={<span className="far fa-star fa-md" style={{color:"#ffcc00"}}></span>}
+                                                    fullSymbol={<span className="fas fa-star fa-md" style={{color:"#ffcc00"}}></span>}
+                                                    initialRating={1}
+                                                    fractions={10}
+                                                    readonly
+                                                />
+                                                <p className="mt-2 mb-3">
+                                                Being C# developer , I started learning IOS development too . From this course I have learn a lot of thing about IOS development.Thank you so much . It was such great experience of learning.
+                                                </p>
+                                                <button className={"btn mr-1 "+
+                                                    (this.isPostLiked()?"btn-success":"btn-outline-secondary")}
+                                                        onClick={this.onClickLikeButton}
+                                                    >
+                                                <i className="far fa-thumbs-up"></i> Like
+                                                </button>
+                                                    <button className={"btn ml-1 "+
+                                                    (this.isPostDisliked()?"btn-danger":"btn-outline-secondary")}
+                                                        onClick={this.onClickDislikeButton}
+                                                    >
+                                                    <i className="far fa-thumbs-down"></i> Dislike</button>   
+                                                </div>
+                                            </div>
+                                            
+                                        </div>
+                                    </div>
+                                    {/* {
                                         this.props.isAuthenticated && this.state.post!=null && this.state.post.author.id==this.props.authUser.id?
                                         <div className="text-right mt-4 mt-sm-0">
                                             <button className={"btn btn-block-xs-only btn-warning"}
@@ -373,7 +629,7 @@ class PostDetails extends Component {
                                             </button>
                                         </div>
                                         :null
-                                    }
+                                    } */}
                             </div>
                         </div>
                     </div>

@@ -172,11 +172,11 @@ class Register extends Component {
         this.props.signupUser(
             creds,
             (user)=>{
-                alertifyService.success("Registered user successfully!");
+                // alertifyService.success("Registered user successfully!");
                 this.props.close();
                 this.props.loginUser(creds,
                     ()=>{
-                        alertifyService.success("Logged in successfully!");
+                        // alertifyService.success("Logged in successfully!");
                     },
                     (error)=>{
                         alertifyService.error(error.message);
@@ -190,7 +190,7 @@ class Register extends Component {
     }
 
     componentDidMount(){
-        console.log("RegisterComponent.componentDidMount",this.props);
+
     }
 
     render(){

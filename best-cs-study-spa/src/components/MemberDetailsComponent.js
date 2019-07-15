@@ -37,12 +37,11 @@ class MemberDetails extends Component {
     }
 
     componentDidMount(){
-        console.log('MemberDetails.componentDidMount');
         setTimeout(this.props.fetchUser(
             this.props.match.params.id,
             (user)=>{                    
-                alertifyService.success('Fetched user '+this.props.match.params.id+' successfully!'); 
-                console.log(user);                  
+                // alertifyService.success('Fetched user '+this.props.match.params.id+' successfully!'); 
+                
                 this.setState({
                     user: user
                 });

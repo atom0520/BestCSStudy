@@ -34,7 +34,7 @@ const mapDispatchToProps = dispatch => ({
 const minTitleLength = 4;
 const maxTitleLength = 100;
 const minDescriptionLength = 20;
-const maxDescriptionLength = 800;
+const maxDescriptionLength = 3000;
 const maxTagNumber = 5;
 const maxImageNumber = 5;
 
@@ -96,12 +96,10 @@ class PostForm extends Component {
         this.handleSubmitForm = this.handleSubmitForm.bind(this);
         this.validateForm = this.validateForm.bind(this);
 
-        console.log("PostForm.constructor");
 
     }
 
     componentDidMount(){
-        console.log("PostForm.componentDidMount");
         
         if(this.props.post!=null){
             let form = this.state.form;
@@ -113,7 +111,7 @@ class PostForm extends Component {
             
             form.fields.links = this.props.post.links.map(link=>{return {value:link}});
             
-            form.fields.tags.value = this.props.post.tags;
+            form.fields.tags.value = this.props.post.tags.map(tag=>tag.toTitleCase());
             
             form.fields.images.value = this.props.post.postImages.map(
                 image=>{
@@ -124,8 +122,7 @@ class PostForm extends Component {
                 });
 
             form.mainImage = this.props.post.postImages.findIndex(image=>image.isMain);
-            // form.mainImage = this.props.post.tags;
-            console.log(form);
+            
             this.setState({form:form});
         }
 
@@ -135,8 +132,7 @@ class PostForm extends Component {
                 minCount: 0
             },
             (tags)=>{                    
-                alertifyService.success('Fetched tags successfully!'); 
-                console.log(tags);
+                // alertifyService.success('Fetched tags successfully!'); 
                 tags = tags.map(tag=>{return {name:tag.value}});
                 let suggestedTags = this.state.suggestedTags;
                 for(let i=0; i<suggestedTags.length; i++){
@@ -144,7 +140,6 @@ class PostForm extends Component {
                         tags.push(suggestedTags[i]);
                     }
                 }
-                console.log(tags);
                 this.setState({
                     suggestedTags: tags
                 });
@@ -157,6 +152,8 @@ class PostForm extends Component {
     }
 
     handleInputChangeTags(tags){
+        tags = tags.map(tag=>tag.toTitleCase());
+
         if((new Set(tags)).size !== tags.length){
             alertifyService.error("Tags cannot be duplicated!");
             return;
@@ -229,7 +226,6 @@ class PostForm extends Component {
     }
 
     onInputAcceptedImage = (acceptedFiles => {
-        console.log("CreatePostComponent.onDropAccepted", acceptedFiles);
         // let form = this.state.form;
         // form.fields.imagesToUpload.value = acceptedFiles;
         // this.setState({
@@ -367,18 +363,19 @@ class PostForm extends Component {
             props.onChange(e)
           }
         }
-        console.log(props);
+
         const inputValue = (props.value && props.value.trim().toLowerCase()) || '';
         const inputLength = inputValue.length;
 
-        let suggestions = this.state.suggestedTags.filter((tag) => {
-          return tag.name.toLowerCase().slice(0, inputLength) === inputValue
+        var suggestions = this.state.suggestedTags.filter((tag) => {
+          return tag.name.slice(0, inputLength) === inputValue
         });
-
-        console.log(suggestions);
+  
+        for(let i=0; i<suggestions.length; i++){
+            suggestions[i] = { name: suggestions[i].name.toTitleCase() }
+        }
 
         return (
-            
             <Autosuggest
                 ref={props.ref}
                 suggestions={suggestions}
@@ -569,7 +566,7 @@ class PostForm extends Component {
             this.state.form.fields.title.value,
             this.state.form.fields.description.value,
             this.state.form.fields.category.value,
-            this.state.form.fields.tags.value.join(','),
+            this.state.form.fields.tags.value.map(tag=>tag.toLowerCase()).join(','),
             encodedLinkValues.join(','),
             this.state.form.fields.images.value,
             this.state.form.mainImage
@@ -603,7 +600,7 @@ class PostForm extends Component {
                                         value={this.state.form.fields.title.value}
                                         onChange={this.handleInputChangeForm}
                                         onBlur={this.handleBlurForm}
-                                        minLength={minTitleLength} maxLength={maxTitleLength}
+                                        minLength={minTitleLength}
                                     />
                                     <div className="invalid-feedback">{this.showFormFieldError('title')?this.state.form.fields.title.error:''}</div>
                                 </div>
@@ -615,7 +612,7 @@ class PostForm extends Component {
                                         value={this.state.form.fields.description.value}
                                         onChange={this.handleInputChangeForm}
                                         onBlur={this.handleBlurForm}
-                                        minLength={minDescriptionLength} maxLength={maxDescriptionLength}
+                                        minLength={minDescriptionLength}
                                     />
                                     <div className="invalid-feedback">{this.showFormFieldError('description')?this.state.form.fields.description.error:''}</div>
                                 </div>

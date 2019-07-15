@@ -76,12 +76,10 @@ class MemberEdit extends Component {
     }
 
     componentDidMount(){
-        console.log('MemberEdit.componentDidMount');
         setTimeout(this.props.fetchUser(
             this.props.auth.decodedToken.nameid,
             (user)=>{   
-                alertifyService.success('Fetched your profile successfully!');
-                console.log(user);                   
+                // alertifyService.success('Fetched your profile successfully!');
 
                 let profileForm = this.state.profileForm;
                 profileForm.fields.introduction.value = user.introduction||"";
@@ -115,43 +113,79 @@ class MemberEdit extends Component {
 
     handleUploadedPhoto(photo) {
 
-        var photos = [...this.state.user.photos];
+        // var photos = [...this.state.user.photos];
 
-        console.log(photo);
-        photos.push(photo);
+        // console.log(photo);
+        // photos.push(photo);
 
-        this.setState({
-            user: {...this.state.user, photos: photos}
-        });
+        // this.setState({
+        //     user: {...this.state.user, photos: photos}
+        // });
+
+        this.props.fetchUser(
+            this.props.auth.decodedToken.nameid,
+            (user)=>{   
+                this.setState({
+                    user: user
+                });
+            },
+            (error)=>{
+                alertifyService.error(error.message);
+            }
+        );
     }
 
     handleSetMainPhoto(photoId) {
 
-        var photos = [...this.state.user.photos];
+        this.props.fetchUser(
+            this.props.auth.decodedToken.nameid,
+            (user)=>{   
+                this.setState({
+                    user: user
+                });
+            },
+            (error)=>{
+                alertifyService.error(error.message);
+            }
+        );
 
-        var oldMainPhoto = photos.find(p=>p.isMain==true);
-        var newMainPhoto = photos.find(p=>p.id==photoId);
+        // var photos = [...this.state.user.photos];
+
+        // var oldMainPhoto = photos.find(p=>p.isMain==true);
+        // var newMainPhoto = photos.find(p=>p.id==photoId);
         
-        newMainPhoto.isMain = true;
+        // newMainPhoto.isMain = true;
 
-        if(oldMainPhoto.id!=newMainPhoto.id){
-            oldMainPhoto.isMain = false;
-        }
+        // if(oldMainPhoto.id!=newMainPhoto.id){
+        //     oldMainPhoto.isMain = false;
+        // }
 
-        this.setState({
-            user: {...this.state.user, photos: photos, photoUrl: newMainPhoto.url}
-        });
+        // this.setState({
+        //     user: {...this.state.user, photos: photos, photoUrl: newMainPhoto.url}
+        // });
     }
 
     handleDeletedPhoto(photoId) {
 
-        var photos = [...this.state.user.photos];
-        console.log(photos.findIndex(p=>p.id==photoId));
-        photos.splice(photos.findIndex(p=>p.id==photoId), 1);
+        // var photos = [...this.state.user.photos];
+        // console.log(photos.findIndex(p=>p.id==photoId));
+        // photos.splice(photos.findIndex(p=>p.id==photoId), 1);
 
-        this.setState({
-            user: {...this.state.user, photos: photos}
-        });
+        // this.setState({
+        //     user: {...this.state.user, photos: photos}
+        // });
+
+        this.props.fetchUser(
+            this.props.auth.decodedToken.nameid,
+            (user)=>{   
+                this.setState({
+                    user: user
+                });
+            },
+            (error)=>{
+                alertifyService.error(error.message);
+            }
+        );
     }
 
     handleInputChangeProfileForm(event){
@@ -222,8 +256,6 @@ class MemberEdit extends Component {
 
     handleSubmitProfileForm(event) {
         event.preventDefault();
-        console.log(this.state.user);
-        console.log(this.state.profileForm);
         this.props.updateUser(this.props.auth.decodedToken.nameid,
             {
                 introduction: this.state.profileForm.fields.introduction.value,
@@ -233,7 +265,7 @@ class MemberEdit extends Component {
                 city: this.state.profileForm.fields.city.value
             },
             ()=>{
-                alertifyService.success('Updated your profile successfully!');
+                // alertifyService.success('Updated your profile successfully!');
                 let profileForm = this.state.profileForm;
                 profileForm.touched = false;
                 profileForm.dirty = false;

@@ -36,18 +36,6 @@ class Home extends Component {
         this.handleSubmitPostParamsForm = this.handleSubmitPostParamsForm.bind(this);
     }
 
-    // registerToggle(){
-    //     this.setState({
-    //         registerMode: true 
-    //     });
-    // }
-
-    // cancelRegisterMode(){
-    //     console.log('HomeComponent.cancelRegisterMode');
-    //     this.setState({
-    //         registerMode: false 
-    //     });
-    // }
     componentDidMount(){
         setTimeout(this.props.fetchTags(
             {
@@ -56,8 +44,8 @@ class Home extends Component {
                 minCount: 2
             },
             (tags)=>{                    
-                alertifyService.success('Fetched trending tags successfully!'); 
-                console.log(tags);
+                // alertifyService.success('Fetched trending tags successfully!'); 
+
                 tags = tags.map(tag=>{ return tag.value});
 
                 let trendingTags = this.state.trendingTags;
@@ -97,7 +85,6 @@ class Home extends Component {
     }
 
     onClickTagButton(tag){
-        console.log('HomeComponent.onClickTagButton', tag);
         this.props.history.push({
             pathname:'/search',
             state:{
@@ -118,86 +105,76 @@ class Home extends Component {
     }
 
     render(){
-        console.log('registerMode: '+this.state.registerMode);
 
         return (
             <div className={styles.background}>
          
-            <div className={styles.center} >
-         
-                <div className="container" >
-                {/* <div className={"jumbotron jumbotron-fluid "+styles.jumbotron}>
-                    <div className="container text-left" >
-                        <h1 className="display-4 text-white">Best CS Study</h1>
-                        <p className="lead text-white">Knowledge is infinite while time is limited. Here you can find the most efficient way to learn your desired skillset.</p>
-                       
-                    </div>
-                </div> */}
-                    <div className="row">
-                        <div className="col-lg-8 offset-lg-2">
-                            <div className="px-2">
-                                <h1 className="" >Best CS Study</h1>
-                                <p >Knowledge is infinite while time is limited. Here you can find the most efficient way to learn your desired skillset.</p>
-                             
-                                <form noValidate>
-                                    <div className="input-group">
-                                        <input className="form-control input-sm" type="text" placeholder="Web Development"
-                                            name="search"
-                                            value={this.state.postParams.search}
-                                            onChange={this.handleInputChangePostParamsForm}
-                                        />
+                <div className={styles.center} >
+            
+                    <div className="container" >
+                        <div className="row">
+                            <div className="col-lg-8 offset-lg-2">
+                                <div className="px-2">
+                                    <h1 className="" >Best CS Study</h1>
+                                    <p >Knowledge is infinite while time is limited. Here you can find the most efficient way to learn your desired skillset.</p>
                                 
-                                        <div className="input-group-append">
-                                            <select className="form-control" style={{borderRadius:'0'}}
-                                                name="category"
-                                                value={this.state.postParams.category}
+                                    <form noValidate>
+                                        <div className="input-group">
+                                            <input className="form-control input-sm" type="text" placeholder="Web Development"
+                                                name="search"
+                                                value={this.state.postParams.search}
                                                 onChange={this.handleInputChangePostParamsForm}
-                                            >
-                                                <option key={"all"} value={""}>
-                                                    { "All" }
-                                                </option>
-                                                {
-                                                    postCategoryOptions.map(category=>{
-                                                        return (
-                                                            <option key={category.value} value={category.value}>
-                                                                { category.display }
-                                                            </option>
-                                                        );
-                                                    })
-                                                }
-                                            </select>   
-                                            <button type="submit" className="btn btn-primary" onClick={this.handleSubmitPostParamsForm}>Search</button>
+                                            />
+                                    
+                                            <div className="input-group-append">
+                                                <select className="form-control" style={{borderRadius:'0'}}
+                                                    name="category"
+                                                    value={this.state.postParams.category}
+                                                    onChange={this.handleInputChangePostParamsForm}
+                                                >
+                                                    <option key={"all"} value={""}>
+                                                        { "All" }
+                                                    </option>
+                                                    {
+                                                        postCategoryOptions.map(category=>{
+                                                            return (
+                                                                <option key={category.value} value={category.value}>
+                                                                    { category.display }
+                                                                </option>
+                                                            );
+                                                        })
+                                                    }
+                                                </select>   
+                                                <button type="submit" className="btn btn-primary" onClick={this.handleSubmitPostParamsForm}>Search</button>
+                                            </div>
                                         </div>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                        <div className="col-lg-10 offset-lg-1">
-                            <div className="px-2">
-                                <hr className="mt-5 mb-5"></hr>
-                                <h3 >Popular Topics</h3>
-                                <div className="row" >
-                                    {
-                                        this.state.trendingTags.map((tag,index)=>{
-                                            return (
-                                                <div key={index} className="col-4 col-lg-3 px-1 py-1">
-                                                    <button className="btn btn-outline-primary btn-block"
-                                                        onClick={(e)=>{this.onClickTagButton(tag);}}
-                                                    >{tag}</button>
-                                                </div>
-                                            )
-                                        })
-                                    }
+                                    </form>
                                 </div>
                             </div>
+                            <div className="col-lg-10 offset-lg-1">
+                                <div className="px-2">
+                                    <hr className="mt-5 mb-5"></hr>
+                                    <h3 >Popular Topics</h3>
+                                    <div className="row" >
+                                        {
+                                            this.state.trendingTags.map((tag,index)=>{
+                                                return (
+                                                    <div key={index} className="col-4 col-lg-3 px-1 py-1">
+                                                        <button className="btn btn-outline-primary btn-block"
+                                                            onClick={(e)=>{this.onClickTagButton(tag);}}
+                                                        >{tag}</button>
+                                                    </div>
+                                                )
+                                            })
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        
                         </div>
-                     
                     </div>
+                
                 </div>
-            
-              
-              
-            </div>
             </div>
         );
     }

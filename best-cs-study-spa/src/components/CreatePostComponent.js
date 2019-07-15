@@ -60,7 +60,6 @@ class CreatePost extends Component {
         images,
         mainImage
     ){
-        console.log(mainImage);
         this.props.createPost(
             title,
             description,
@@ -70,12 +69,11 @@ class CreatePost extends Component {
             images,
             mainImage,
             (post)=>{
-                console.log(post);
-                alertifyService.success("Created post successfully!");
+                // alertifyService.success("Created post successfully!");
                 this.props.history.push(`/posts/${post.id}`);
                 this.props.fetchAuthUser(this.props.authUser.id,
                     (user)=>{
-                        alertifyService.success("Fetched auth user successfully!");
+                        // alertifyService.success("Fetched auth user successfully!");
                         
                     },
                     (error)=>{
