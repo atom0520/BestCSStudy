@@ -7,6 +7,8 @@ import { postCategoryOptions } from "../shared/global";
 import styles from './PostsComponent.module.scss';
 import { withRouter } from 'react-router-dom';
 import { maxPostListDescriptionDisplayLength } from '../shared/global';
+import Rating from 'react-rating';
+import Post from './PostComponent';
 
 const mapStateToProps = state => {
     return {
@@ -319,95 +321,109 @@ class Posts extends Component {
                             this.state.posts && this.state.posts.length?
                             this.state.posts.map((post, index)=>{
                                 return(
-                                    <div key={post.id} className={"col-12 p-4 border-bottom "+(index==0?"border-top ":"")+styles.divPost} onClick={()=>this.onClickPost(post.id)}>
+                                    <Post key={post.id} 
+                                        post={post} 
+                                        index={index} 
+                                        onClickPost={this.onClickPost}
+                                    />
+                                    // <div key={post.id} className={"col-12 p-4 border-bottom "+(index==0?"border-top ":"")+styles.divPost} onClick={()=>this.onClickPost(post.id)}>
 
-                                        <div className={"row text-left"} >
+                                    //     <div className={"row text-left"} >
                                             
-                                            {/* <div className="col-12 my-auto px-5 px-sm-2 col-sm-2"> */}
-                                            <div className="my-auto text-center col-12 px-5 col-sm-2 px-sm-3">
-                                                <img className={" "+styles.imgCardSide} src={post.mainPostImageUrl}></img>
-                                            </div>
-                                            {/* <div className="col pt-0 pt-sm-2"> */}
+                                    //         {/* <div className="col-12 my-auto px-5 px-sm-2 col-sm-2"> */}
+                                    //         <div className="my-auto text-center col-12 px-5 col-sm-2 px-sm-3">
+                                    //             <img className={" "+styles.imgCardSide} src={post.mainPostImageUrl}></img>
+                                    //         </div>
+                                    //         {/* <div className="col pt-0 pt-sm-2"> */}
                                          
-                                            <div className="col col-sm-10 mt-3 mt-md-0">
-                                                <h3 className="">{post.title}</h3>
-                                                <div className="mb-2 text-secondary">
-                                                    <span>Updated: {(new Date(post.updated)).toLocaleDateString("en-US", { year: 'numeric', month: 'long', day: 'numeric'})}</span>
-                                                </div>
-                                                <div className="mb-2">
-                                                    <strong className="font-weight-bold">Category: </strong> {post.category.toUpperCase()}
-                                                </div>
-                                                <div className="mb-3">
-                                                    <strong className="font-weight-bold">Tags: </strong> {post.tags.map(tag=>tag.toTitleCase()).join(", ")}
-                                                </div>
+                                    //         <div className="col col-sm-10 mt-3 mt-md-0">
+                                    //             <h3 className="">{post.title}</h3>
+                                    //             <div className="mb-2 text-secondary">
+                                    //                 {/* <span>Posted: {(new Date(post.created)).toLocaleDateString("en-US", { year: 'numeric', month: 'long', day: 'numeric'})}</span>
+                                    //                 <br/> */}
+                                    //                 <span>Last Updated: {(new Date(post.updated)).toLocaleDateString("en-US", { year: 'numeric', month: 'long', day: 'numeric'})}</span>
+                                    //             </div>
+                                                
+                                    //             <div className="mb-1">
+                                    //                 <strong className="font-weight-bold mr-1">Category: </strong> {post.category.toUpperCase()}
+                                    //             </div>
+                                    //             <div className="mb-2">
+                                    //                 <strong className="font-weight-bold mr-1">Tags: </strong> {post.tags.map(tag=>tag.toTitleCase()).join(", ")}
+                                    //             </div>
+                                    //             <div className="mb-3">
+                                    //                 <strong className="font-weight-bold mr-1">Rating: </strong>
+                                    //                 <Rating 
+                                    //                     emptySymbol={<span className="far fa-star fa-md" style={{color:"#ffcc00"}}></span>}
+                                    //                     fullSymbol={<span className="fas fa-star fa-md" style={{color:"#ffcc00"}}></span>}
+                                    //                     initialRating={3.9}
+                                    //                     fractions={10}
+                                    //                     readonly
+                                    //                 />
+                                    //                 <span className="ml-2">3.9 (19,298 ratings)</span>
                                               
-                                                <div className={"mb-4 "}>{post.description.length<=maxPostListDescriptionDisplayLength?post.description.length:(post.description.substring(0,maxPostListDescriptionDisplayLength)+"...")}</div>
-                                                {
-                                                    this.props.isAuthenticated?
-                                                    <div className={"row text-left"} >
-                                                        <div className="col">
-                                                            <button className={"btn mr-2 "+(post.likers.includes(this.props.authUser.id)?"btn-success":"btn-outline-secondary")}
-                                                                onClick={(e)=>{
-                                                                    e.stopPropagation(); 
-                                                                    this.handleLikePost(index)}}
-                                                            >
-                                                                <i className="far fa-thumbs-up"></i> Like · {post.likers.length}
-                                                            </button>
-                                                            <button className={"btn "+(post.dislikers.includes(this.props.authUser.id)?"btn-danger":"btn-outline-secondary")}
-                                                                onClick={(e)=>{
-                                                                    e.stopPropagation(); 
-                                                                    this.handleDislikePost(index)}}
-                                                            >
-                                                                <i className="far fa-thumbs-down"></i> Dislike · {post.dislikers.length}
-                                                            </button>
-                                                        </div>
-                                                        {
-                                                            post.author.id==this.props.authUser.id?
-                                                            <div className="col-4 text-right">
-                                                                <button className={"btn btn-warning"}
-                                                                    onClick={(e)=>{
-                                                                        e.stopPropagation();
-                                                                        this.onClickEditPostButton(post.id);
-                                                                    }}
-                                                                >
-                                                                    <i className="fas fa-edit"></i> Edit
-                                                                </button>
-                                                            </div>
-                                                            :null
-                                                        }
-                                                    </div>
-                                                    :
-                                                    <div className={"row text-left"} >
-                                                    <div className="col">
-                                                        <button className={"btn mr-2 btn-outline-secondary"}
-                                                             onClick={(e)=>{
-                                                                e.stopPropagation(); 
-                                                                this.props.showModal("login"); }}
-                                                        >
-                                                            <i className="far fa-thumbs-up"></i> Like · {post.likers.length}
-                                                        </button>
-                                                        <button className={"btn btn-outline-secondary"}
-                                                            onClick={(e)=>{
-                                                                e.stopPropagation(); 
-                                                                this.props.showModal("login"); }}
-                                                        >
-                                                            <i className="far fa-thumbs-down"></i> Dislike · {post.dislikers.length}
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                                }
-                                                {/* <span className="ml-auto text-right">
+                                    //             </div>
+                                    //             <div className={"mb-3"}>{post.description.length<=maxPostListDescriptionDisplayLength?post.description.length:(post.description.substring(0,maxPostListDescriptionDisplayLength)+"...")}</div>
+                                                
+                                    //             {/* {
+                                    //                 this.props.isAuthenticated?
+                                    //                 <div className={"row text-left"} >
+                                    //                     <div className="col">
+                                    //                         <button className={"btn mr-2 "+(post.likers.includes(this.props.authUser.id)?"btn-success":"btn-outline-secondary")}
+                                    //                             onClick={(e)=>{
+                                    //                                 e.stopPropagation(); 
+                                    //                                 this.handleLikePost(index)}}
+                                    //                         >
+                                    //                             <i className="far fa-thumbs-up"></i> Like · {post.likers.length}
+                                    //                         </button>
+                                    //                         <button className={"btn "+(post.dislikers.includes(this.props.authUser.id)?"btn-danger":"btn-outline-secondary")}
+                                    //                             onClick={(e)=>{
+                                    //                                 e.stopPropagation(); 
+                                    //                                 this.handleDislikePost(index)}}
+                                    //                         >
+                                    //                             <i className="far fa-thumbs-down"></i> Dislike · {post.dislikers.length}
+                                    //                         </button>
+                                    //                     </div>
+                                    //                     {
+                                    //                         post.author.id==this.props.authUser.id?
+                                    //                         <div className="col-4 text-right">
+                                    //                             <button className={"btn btn-warning"}
+                                    //                                 onClick={(e)=>{
+                                    //                                     e.stopPropagation();
+                                    //                                     this.onClickEditPostButton(post.id);
+                                    //                                 }}
+                                    //                             >
+                                    //                                 <i className="fas fa-edit"></i> Edit
+                                    //                             </button>
+                                    //                         </div>
+                                    //                         :null
+                                    //                     }
+                                    //                 </div>
+                                    //                 :
+                                    //                 <div className={"row text-left"} >
+                                    //                 <div className="col">
+                                    //                     <button className={"btn mr-2 btn-outline-secondary"}
+                                    //                          onClick={(e)=>{
+                                    //                             e.stopPropagation(); 
+                                    //                             this.props.showModal("login"); }}
+                                    //                     >
+                                    //                         <i className="far fa-thumbs-up"></i> Like · {post.likers.length}
+                                    //                     </button>
+                                    //                     <button className={"btn btn-outline-secondary"}
+                                    //                         onClick={(e)=>{
+                                    //                             e.stopPropagation(); 
+                                    //                             this.props.showModal("login"); }}
+                                    //                     >
+                                    //                         <i className="far fa-thumbs-down"></i> Dislike · {post.dislikers.length}
+                                    //                     </button>
+                                    //                 </div>
+                                    //             </div>
+                                    //             } */}
+                                    //             {/* <span className="ml-auto text-right">
                                                     
-                                                </span> */}
-                                                {/* <a href="#" className="btn btn-primary">Go somewhere</a> */}
-                                            </div>
-                                            {/* <div className="card-footer text-muted">
-                                                2 days ago
-                                            </div> */}
-                                        </div>
-                                    </div>
-                                    // <div key={post.id} className="col-lg-2 col-md-3 col-sm-6">
-                                    //     {post.title}
+                                    //             </span> */}
+                                    //             {/* <a href="#" className="btn btn-primary">Go somewhere</a> */}
+                                    //         </div>
+                                    //     </div>
                                     // </div>
                                 );
                             })

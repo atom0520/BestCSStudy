@@ -157,9 +157,9 @@ class Main extends Component {
                     />
 
                     <Route exact path="/search" render={(props) => <Posts showModal={this.showModal}/>}  />
-                    <Route exact path="/posts/:id" render={(props) => <PostDetails />} />
+                    <Route exact path="/posts/:id" render={(props) => <PostDetails showModal={this.showModal} />} />
                     <AuthGuardedRoute path="/posts/:id/edit" render={(props) => <EditPost />} />
-                    <AuthGuardedRoute path="/likedPosts" render={(props) => <LikedPosts/>} />
+                    {/* <AuthGuardedRoute path="/likedPosts" render={(props) => <LikedPosts/>} /> */}
                     <AuthGuardedRoute path="/userPosts/:id" render={(props) => <UserPosts/>} />
                     {/* <AuthGuardedRoute exact path="/members" render={(props) => <MemberList/>} /> */}
                     <Route path="/members/:id" render={(props) => <MemberDetails />} />

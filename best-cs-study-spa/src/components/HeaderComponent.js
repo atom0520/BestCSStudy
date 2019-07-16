@@ -70,13 +70,13 @@ class Header extends Component {
                             <li className="nav-item" >                                
                                 <NavLink to="/search" className="nav-link" activeClassName="active">Search</NavLink>
                             </li>
-                            {
+                            {/* {
                                 this.props.auth.isAuthenticated?
                                 <li className="nav-item" >
                                     <NavLink to="/likedPosts" className="nav-link" activeClassName="active">Liked</NavLink>
                                 </li>
                                 : null
-                            }
+                            } */}
                             {
                                 this.props.auth.isAuthenticated?
                                 <li className="nav-item" >

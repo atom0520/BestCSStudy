@@ -59,6 +59,7 @@ class PostDetails extends Component {
                     links[i] = decodeURIComponent(links[i]);
                 }
                 post.links = links;
+                console.log(post);
                 this.setState({
                     post: post
                 });
@@ -273,8 +274,24 @@ class PostDetails extends Component {
                                 </div>
                             </div>
                             {
-                                this.props.isAuthenticated?
+                                this.state.post?
                                 <div className="card-footer ">
+                                {
+                                    this.props.isAuthenticated && this.state.post.author.id == this.props.authUser.id?
+                                    <React.Fragment>
+                                        <button className={"btn mx-1 btn-warning"}
+                                            onClick={this.onClickEditButton}>
+                                            <i className="fas fa-edit"></i> Edit
+                                        </button>
+                                        <button className={"btn mx-1 btn-danger"}
+                                        >
+                                        <i className="fas fa-trash-alt"></i> Delete</button>
+                                    </React.Fragment>
+                                  
+                                    :<button className={"btn btn-block btn-warning"}>
+                                    <i className="fas fa-edit mr-1"></i> Write a Review</button>  
+                                }
+                                    
                                     {/* <button className={"btn mx-1 "+
                                     (this.isPostLiked()?"btn-success":"btn-outline-secondary")}
                                         onClick={this.onClickLikeButton}
@@ -286,19 +303,11 @@ class PostDetails extends Component {
                                         onClick={this.onClickDislikeButton}
                                     >
                                     <i className="far fa-thumbs-down"></i> Dislike</button>   */}
-
-                                    {/* <button className={"btn btn-block btn-warning"}
-                                                onClick={this.onClickEditButton}
-                                            >
-                                                <i className="fas fa-edit"></i> Edit
-                                     </button>
-                                    <button className={"btn btn-block btn-danger"}
-                                    >
-                                    <i className="fas fa-trash-alt"></i> Delete</button>             */}
-
-                                       <button className={"btn btn-block btn-warning"}
-                                    >
-                                    <i className="fas fa-edit mr-1"></i> Write a Review</button>                
+                                    
+                                   
+                                               
+                                    
+                                                  
                                 </div>
                                 :null
                             }
@@ -520,100 +529,47 @@ class PostDetails extends Component {
                                                 </div>
                                              
                                                 <div className="col">
-                                                <Rating 
-                                                    emptySymbol={<span className="far fa-star fa-md" style={{color:"#ffcc00"}}></span>}
-                                                    fullSymbol={<span className="fas fa-star fa-md" style={{color:"#ffcc00"}}></span>}
-                                                    initialRating={1}
-                                                    fractions={10}
-                                                    readonly
-                                                />
-                                                <p className="mt-2 mb-3">
-                                                Being C# developer , I started learning IOS development too . From this course I have learn a lot of thing about IOS development.Thank you so much . It was such great experience of learning.
-                                                </p>
-                                                <button className={"btn mr-1 "+
-                                                    (this.isPostLiked()?"btn-success":"btn-outline-secondary")}
-                                                        onClick={this.onClickLikeButton}
-                                                    >
-                                                <i className="far fa-thumbs-up"></i> Like
-                                                </button>
-                                                    <button className={"btn ml-1 "+
-                                                    (this.isPostDisliked()?"btn-danger":"btn-outline-secondary")}
-                                                        onClick={this.onClickDislikeButton}
-                                                    >
-                                                    <i className="far fa-thumbs-down"></i> Dislike</button>   
-                                                </div>
-                                            </div>
-                                            <div className="row border-bottom py-4">
-                                                <div className="col-3">
-                                                    <span className="mr-2">
-                                                        <img className={styles.imgAuthor} src={this.state.post?(this.state.post.author.photoUrl || ImgUser):''} alt=""/>
-                                                    </span>
+                                                    <Rating 
+                                                        emptySymbol={<span className="far fa-star fa-md" style={{color:"#ffcc00"}}></span>}
+                                                        fullSymbol={<span className="fas fa-star fa-md" style={{color:"#ffcc00"}}></span>}
+                                                        initialRating={1}
+                                                        fractions={10}
+                                                        readonly
+                                                    />
+                                                    <p className="mt-2 mb-3">
+                                                    Being C# developer , I started learning IOS development too . From this course I have learn a lot of thing about IOS development.Thank you so much . It was such great experience of learning.
+                                                    </p>
                                                     {
-                                                        this.state.post?
-                                                        this.state.post.author.username
-                                                        :null
+                                                        this.props.isAuthenticated?
+                                                        <React.Fragment>
+                                                            <button className={"btn mr-1 "+
+                                                                (this.isPostLiked()?"btn-success":"btn-outline-secondary")}
+                                                                    onClick={this.onClickLikeButton}
+                                                                >
+                                                                <i className="far fa-thumbs-up"></i> Like
+                                                            </button>
+                                                            <button className={"btn ml-1 "+
+                                                            (this.isPostDisliked()?"btn-danger":"btn-outline-secondary")}
+                                                                onClick={this.onClickDislikeButton}
+                                                            >
+                                                            <i className="far fa-thumbs-down"></i> Dislike</button>   
+                                                        </React.Fragment>
+                                                        :
+                                                        <React.Fragment>
+                                                            <button className={"btn mr-1 btn-outline-secondary"}
+                                                                    onClick={this.onClickLikeButton}
+                                                                >
+                                                                <i className="far fa-thumbs-up"></i> Like 
+                                                                <span className="ml-1">(12)</span>
+                                                            </button>
+                                                            <button className={"btn ml-1 btn-outline-secondary"}
+                                                                onClick={this.onClickDislikeButton}
+                                                            >
+                                                                <i className="far fa-thumbs-down"></i> Dislike 
+                                                                <span className="ml-1">(2)</span>
+                                                            </button>   
+                                                        </React.Fragment>
                                                     }
-                                                    <p>Posted 15 days ago</p>
-                                                </div>
-                                             
-                                                <div className="col">
-                                                <Rating 
-                                                    emptySymbol={<span className="far fa-star fa-md" style={{color:"#ffcc00"}}></span>}
-                                                    fullSymbol={<span className="fas fa-star fa-md" style={{color:"#ffcc00"}}></span>}
-                                                    initialRating={1}
-                                                    fractions={10}
-                                                    readonly
-                                                />
-                                                <p className="mt-2 mb-3">
-                                                Being C# developer , I started learning IOS development too . From this course I have learn a lot of thing about IOS development.Thank you so much . It was such great experience of learning.
-                                                </p>
-                                                <button className={"btn mr-1 "+
-                                                    (this.isPostLiked()?"btn-success":"btn-outline-secondary")}
-                                                        onClick={this.onClickLikeButton}
-                                                    >
-                                                <i className="far fa-thumbs-up"></i> Like
-                                                </button>
-                                                    <button className={"btn ml-1 "+
-                                                    (this.isPostDisliked()?"btn-danger":"btn-outline-secondary")}
-                                                        onClick={this.onClickDislikeButton}
-                                                    >
-                                                    <i className="far fa-thumbs-down"></i> Dislike</button>   
-                                                </div>
-                                            </div><div className="row border-bottom py-4">
-                                                <div className="col-3">
-                                                    <span className="mr-2">
-                                                        <img className={styles.imgAuthor} src={this.state.post?(this.state.post.author.photoUrl || ImgUser):''} alt=""/>
-                                                    </span>
-                                                    {
-                                                        this.state.post?
-                                                        this.state.post.author.username
-                                                        :null
-                                                    }
-                                                    <p>Posted 15 days ago</p>
-                                                </div>
-                                             
-                                                <div className="col">
-                                                <Rating 
-                                                    emptySymbol={<span className="far fa-star fa-md" style={{color:"#ffcc00"}}></span>}
-                                                    fullSymbol={<span className="fas fa-star fa-md" style={{color:"#ffcc00"}}></span>}
-                                                    initialRating={1}
-                                                    fractions={10}
-                                                    readonly
-                                                />
-                                                <p className="mt-2 mb-3">
-                                                Being C# developer , I started learning IOS development too . From this course I have learn a lot of thing about IOS development.Thank you so much . It was such great experience of learning.
-                                                </p>
-                                                <button className={"btn mr-1 "+
-                                                    (this.isPostLiked()?"btn-success":"btn-outline-secondary")}
-                                                        onClick={this.onClickLikeButton}
-                                                    >
-                                                <i className="far fa-thumbs-up"></i> Like
-                                                </button>
-                                                    <button className={"btn ml-1 "+
-                                                    (this.isPostDisliked()?"btn-danger":"btn-outline-secondary")}
-                                                        onClick={this.onClickDislikeButton}
-                                                    >
-                                                    <i className="far fa-thumbs-down"></i> Dislike</button>   
                                                 </div>
                                             </div>
                                             
